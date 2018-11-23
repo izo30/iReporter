@@ -265,6 +265,27 @@ input[type=submit]:hover {
     background-color: #36638d;
 }
 
+.deleteButton {
+    background-color: #ff3333;
+    border: none;
+
+    margin-left: 13px;
+    color: white;
+    padding: 5px 5px;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+}
+
+.deleteButton:hover {
+    background-color: #e60000;
+}
+
+.toAddRecordButton {
+    color: #FFFFFF;
+    text-decoration: none;
+}
+
 /*styels for tablets*/
 @media only screen and (min-width: 400px) and (max-width: 1024px) {
     

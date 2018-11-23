@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>edit redflag</title>
+        <meta charset="utf-8" />
+
+        <link rel="stylesheet" href="styles/style.css" type="text/css" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    </head>
+
+    <body class="body">
+        <ul class="mainNavigation">
+            <li><a href="#">Home</a></li>
+            <li><a class="active" href="interventions.html">Intervention</a></li>
+            <li><a href="redflags.html">Red Flag</a></li>
+            <li id="floatRight"><a href="profile.html">Profile</a></li>
+        </ul>
+
+        <div class="addInterventionContainer">
+            <div class="interventionMap" id="googleMap"></div>
+
+            <aside class="addIntervention">
+                <h3>Edit this Intervention</h3>
+                <form action="" >
+                    <table class="addInterventionTable">
+                        <tr>
+                            <td><label for="title">Title</label></td>
+                            <td><input class="interventionInput" type="text" value="Market Grounds" name="title"></td>
+                        </tr>
+                        <tr>
+                            <td><label for="description">Description</label></td>
+                            <td><input class="interventionInput" type="text" value="The market grounds need renovation to fix the leaking roofs" name="description"></td>
+                        </tr>
+                        <tr>
+                            <td><label for="date">Date</label></td>
+                            <td><input class="interventionInput" type="date" value="10/31/2018" name="date"></td>
+                        </tr>
+                        <tr>
+                            <td><label for="latitude">Latitude</label></td>
+                            <td><input class="interventionInput" type="text" value="-1.027167" name="latitude"></td>
+                        </tr>
+                        <tr>
+                            <td><label for="longitude">Longitude</label></td>
+                            <td><input class="interventionInput" type="text" value="37.060639" name="longitude"></td>
+                        </tr>
+                        <tr>
+                            <td><label for="image">Image</label></td>
+                            <td><input class="interventionInput" type="file" name="image" accept="image/*"></td>
+                        </tr>
+                        <tr>
+                            <td><label for="video">Video</label></td>
+                            <td><input class="interventionInput" type="file" name="image" accept="video/*"></td>
+                        </tr>
+    
+                    </table>
+    
+                    <div class="addInterventionButton">
+                        <button id="edit">EDIT</button>                            
+                    </div>
+    
+                </form>
+            </aside>
+        </div>
+
+        <script>
+            function myMap() {
+                var mapProp= {
+                    center:new google.maps.LatLng(51.508742,-0.120850),
+                    zoom:5,
+                };
+                var map=new google.maps.Map(document.getElementById("googleMap"),mapProp);
+                var marker = new google.maps.Marker({
+                    position:myCenter,
+                    animation:google.maps.Animation.BOUNCE
+                });
+
+                marker.setMap(map);
+            }
+        </script>
+
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCWvXUZJUbwPYBZeD-G8RDK1toaZP8cbzU&callback=myMap"></script>
+
+        <div class="mainFooter">
+            <p>Copyright &copy; 2018 Isaac Wangethi</p>
+        </div>
+    </body>
+</html>

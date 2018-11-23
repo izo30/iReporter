@@ -284,7 +284,6 @@ input[type=submit]:hover {
     color: #FFFFFF;
     text-decoration: none;
 }
-
 .editButton {
     width: 40px;
     background-color:  #ffcc00;
@@ -303,7 +302,6 @@ input[type=submit]:hover {
     color: #FFFFFF;
     text-decoration: none;
 }
-
 /*styels for tablets*/
 @media only screen and (min-width: 400px) and (max-width: 1024px) {
     

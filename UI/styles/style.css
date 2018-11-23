@@ -302,6 +302,17 @@ input[type=submit]:hover {
     color: #FFFFFF;
     text-decoration: none;
 }
+.selectStatus select {
+    width: 180px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    background-color: #5f9bd4;
+    color: #fff;
+}
+.selectStatus select:hover {
+    background-color: #36638d;
+}
 /*styels for tablets*/
 @media only screen and (min-width: 400px) and (max-width: 1024px) {
     

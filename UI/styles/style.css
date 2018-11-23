@@ -73,12 +73,21 @@
     max-height:100%;
     overflow:auto;
 }
-/*TODO
-styles for signup
-*/
-/*TODO
-styles for profile
-*/
+.signupContainer {
+    width: 300px;
+    height: 580px;
+    border-radius: 4px;
+    background-color: #fff;
+    padding: 40px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    position:absolute; 
+    left:0; right:0;
+    top:0; bottom:0;
+    margin:auto;
+    max-width:100%;
+    max-height:100%;
+    overflow:auto;
+}
 .loginHeader {
     text-align: center;
 }
@@ -112,10 +121,7 @@ input[type=submit]:hover {
 
 /*styles for mobile phones*/
 @media only screen and (min-width: 150px) and (max-width: 400px) {
-    /*TODO 
-    add  style for signup container
-    */
-    .formContainer {
+    .formContainer, .signupContainer {
         height: 100%;
     }   
 }

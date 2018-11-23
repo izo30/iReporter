@@ -88,6 +88,18 @@
     max-height:100%;
     overflow:auto;
 }
+.profileContainer {
+    width: 70%;
+    border-radius: 4px;
+    background-color: #fff;
+    padding: 40px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    margin: auto;
+    margin-top: 100px;
+    max-width:100%;
+    max-height:100%;
+    overflow:auto;
+}
 .loginHeader {
     text-align: center;
 }
@@ -95,6 +107,16 @@
     width: 100%;
     padding: 12px 20px;
     margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+.profileInput {
+    width: 300px;
+    padding: 12px 20px;
+    margin: 8px 0;
+    margin-left: 50px;
     display: inline-block;
     border: 1px solid #ccc;
     border-radius: 4px;
@@ -113,6 +135,32 @@ input[type=submit] {
 input[type=submit]:hover {
     background-color: #36638d;
 }
+
+.profileTable {
+    margin: auto;
+    width: 60%;
+    padding: 10px;
+}
+
+.profileButton {
+    width: 60%;
+    margin: auto;
+}
+
+.profileButton button {
+    margin-left: 13px;
+    width: 220px;
+    background-color: #5f9bd4;
+    color: white;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.profileButton button:hover {
+    background-color: #36638d;
+}
+
 
 /*styels for tablets*/
 @media only screen and (min-width: 400px) and (max-width: 1024px) {

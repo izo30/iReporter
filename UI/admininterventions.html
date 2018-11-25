@@ -11,12 +11,23 @@
     <body class="body">
         <ul class="mainNavigation">
             <li><a href="home.html">Home</a></li>
-            <li><a class="active" href="#">Intervention</a></li>
-            <li><a href="adminredflags.html">Red Flag</a></li>
+            <li><a class="active" href="#">Interventions</a></li>
+            <li><a href="adminredflags.html">Red Flags</a></li>
+            <li id="floatRight"><a href="login.html">Signout</a></li>
             <li id="floatRight"><a href="profile.html">Profile</a></li>
         </ul>
 
-        <div class="recordsContainer">            
+        <div class="recordsContainer"> 
+            <form class="selectStatus">
+                <select id="status" name="state">
+                    <option selected disabled>Filter</option>
+                    <option value="draft">Draft</option>
+                    <option value="underInvestigation">Under Investigation</option>
+                    <option value="rejected">Rejected</option>
+                    <option value="resolved">Resolved</option>
+                </select>
+            </form><br> 
+
             <table>
                 <!--dummy data provide below-->
                 <tr>

@@ -10,9 +10,10 @@
 
     <body class="body">
         <ul class="mainNavigation">
-            <li><a href="#">Home</a></li>
-            <li><a href="interventions.html">Intervention</a></li>
-            <li><a class="active" href="redflags.html">Red Flag</a></li>
+            <li><a href="home.html">Home</a></li>
+            <li><a href="interventions.html">Interventions</a></li>
+            <li><a class="active" href="redflags.html">Red Flags</a></li>
+            <li id="floatRight"><a href="login.html">Signout</a></li>
             <li id="floatRight"><a href="profile.html">Profile</a></li>
         </ul>
 
@@ -65,8 +66,8 @@
         <script>
             function myMap() {
                 var mapProp= {
-                    center:new google.maps.LatLng(51.508742,-0.120850),
-                    zoom:5,
+                    center:new google.maps.LatLng(1.2921,36.8219),
+                    zoom:6,
                 };
                 var map=new google.maps.Map(document.getElementById("googleMap"),mapProp);
                 var marker = new google.maps.Marker({

@@ -11,45 +11,70 @@
     <body class="body">
         <ul class="mainNavigation">
             <li><a href="home.html">Home</a></li>
-            <li><a href="interventions.html">Intervention</a></li>
-            <li><a href="redflags.html">Red Flag</a></li>
+            <li><a href="interventions.html">Interventions</a></li>
+            <li><a href="redflags.html">Red Flags</a></li>
+            <li id="floatRight"><a href="login.html">Signout</a></li>
             <li class="active" id="floatRight"><a href="#">Profile</a></li>
         </ul>
 
         <div class="profileContainer">
-            
-            <form action="" >
-                <table class="profileTable">
-                    <tr>
-                        <td><label for="firstname">First Name</label></td>
-                        <td><input class="profileInput" type="text" id="firstname" name="firstname" disabled="disabled" value="Isaac"></td>
-                    </tr>
-                    <tr>
-                        <td><label for="lastname">Last Name</label></td>
-                        <td><input class="profileInput" type="text" id="lastname" name="lastname" disabled="disabled" value="Wangethi"></td>
-                    </tr>
-                    <tr>
-                        <td><label for="email">Email</label></td>
-                        <td><input class="profileInput" type="email" id="email" name="email" disabled="disabled" value="isaacwangethi30gmail.com"></td>
-                    </tr>
-                    <tr>
-                        <td><label for="phone">Phone</label></td>
-                        <td><input class="profileInput" type="text" id="phone" name="phone" disabled="disabled" value="0706874327"></td>
-                    </tr>
-                    <tr>
-                        <td><label for="password">Password</label></td>
-                        <td><input class="profileInput" type="password" id="password" name="password" disabled="disabled" value="password"></td>
-                    </tr>
+            <a href="settings.html" class="toAddRecordButton"><button class="recordButton" id="settingsButton">Settings</button></a>
 
+            <div class="card left" style="float: left;">
+                <header class="header">
+                    <h3>Interventions</h3>
+                </header>
+
+                <table class="totalRecord" id="floatLeft">
+                    <tr>
+                        <td class="tdHeader">Draft:</td>
+                        <td id="tdValue">3</td>
+                    </tr>
+                    <tr>
+                        <td class="tdHeader">Resolved:</td>
+                        <td id="tdValue">2</td>
+                    </tr>
+                    <tr>
+                        <td class="tdHeader">Under Investigation:</td>
+                        <td id="tdValue">4</td>
+                    </tr>
+                    <tr>
+                        <td class="tdHeader">Rejected:</td>
+                        <td id="tdValue">1</td>
+                    </tr>
                 </table>
+                <a href="interventions.html">
+                    <button>View all Interventions</button>
+                </a>
+            </div>
 
-                <div class="profileButton">
-                    <button id="edit">EDIT</button>
-                    <button id="save">SAVE</button>
-                    
-                </div>
+            <div class="card" id="floatRight">
+                <header class="header">
+                    <h3>Red Flags</h3>
+                </header>
 
-            </form>
+                <table class="totalRecord">
+                    <tr>
+                        <td class="tdHeader">Draft:</td>
+                        <td id="tdValue">3</td>
+                    </tr>
+                    <tr>
+                        <td class="tdHeader">Resolved:</td>
+                        <td id="tdValue">2</td>
+                    </tr>
+                    <tr>
+                        <td class="tdHeader">Under Investigation:</td>
+                        <td id="tdValue">4</td>
+                    </tr>
+                    <tr>
+                        <td class="tdHeader">Rejected:</td>
+                        <td id="tdValue">1</td>
+                    </tr>
+                </table>
+                <a href="redflags.html">
+                    <button>View all Red Flags</button>
+                </a>
+            </div>
             
         </div>
 

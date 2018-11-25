@@ -313,16 +313,64 @@ input[type=submit]:hover {
 .selectStatus select:hover {
     background-color: #36638d;
 }
-/*styels for tablets*/
-@media only screen and (min-width: 400px) and (max-width: 1024px) {
-    
+
+.card {
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+    width: 40%;
+}
+.card h3, p {
+    color: #000;
 }
 
-/*styles for mobile phones*/
-@media only screen and (min-width: 150px) and (max-width: 400px) {
-    .formContainer, .signupContainer {
-        height: 100%;
-    }   
+.container {
+    padding: 2px 16px;
+}
+.card a {
+    text-decoration: none;
+}
+.header {
+    background-color: #e6e6e6;
+    padding-top: 1px;
+    padding-left: 20px;
+    padding-bottom: 1px;
+}
+.card button {
+    width: 100%;
+    height: 50px;
+    border: none;
+    background-color: #5f9bd4;
+    color: #fff;
+    font-size: 18px;
+}
+.card button:hover {
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+    background-color: #36638d;
+    cursor: pointer;
+}
+.totalRecord {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.totalRecord td{
+    border: none;
+    padding: 8px;
+}
+
+.tdHeader {
+    font-size: 18px;
+}
+#floatLeft {
+    float: left;
+}
+#floatRight {
+    float: right;
+    margin-left: 0;
+}
+#settingsButton {
+    float: right;
+    margin-left: 20px;
 }
 
 /*styles for footer*/
@@ -334,4 +382,19 @@ input[type=submit]:hover {
     background-color: #333;
     color: white;
     text-align: center;
+}
+.mainFooter p {
+    color: white;
+}
+
+/*styels for tablets*/
+@media only screen and (min-width: 400px) and (max-width: 1024px) {
+    
+}
+
+/*styles for mobile phones*/
+@media only screen and (min-width: 150px) and (max-width: 400px) {
+    .formContainer, .signupContainer {
+        height: 100%;
+    }   
 }

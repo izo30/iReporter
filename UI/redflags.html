@@ -11,13 +11,24 @@
     <body class="body">
         <ul class="mainNavigation">
             <li><a href="home.html">Home</a></li>
-            <li><a href="interventions.html">Intervention</a></li>
-            <li><a class="active" href="#">Red Flag</a></li>
+            <li><a href="interventions.html">Interventions</a></li>
+            <li><a class="active" href="#">Red Flags</a></li>
+            <li id="floatRight"><a href="login.html">Signout</a></li>
             <li id="floatRight"><a href="profile.html">Profile</a></li>
         </ul>
 
         <div class="recordsContainer">
-            <button class="recordButton"><a href="addredflag.html" class="toAddRecordButton">Add Red Flag</a></button>
+            <a href="addredflag.html" class="toAddRecordButton"><button class="recordButton">Add Red Flag</button></a>
+
+            <form class="selectStatus">
+                <select id="status" name="state">
+                    <option selected disabled>Filter</option>
+                    <option value="draft">Draft</option>
+                    <option value="underInvestigation">Under Investigation</option>
+                    <option value="rejected">Rejected</option>
+                    <option value="resolved">Resolved</option>
+                </select>
+            </form><br>
 
             <table>
                 <!--dummy data provide below-->
@@ -27,7 +38,7 @@
                     <th>date</th>
                     <th>Latitude</th>
                     <th>Longitude</th>
-                    <td>Status</td>
+                    <th>Status</th>
                 </tr>
                 <tr>
                     <td>Bribe</td>

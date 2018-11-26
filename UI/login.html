@@ -19,9 +19,22 @@
                 <label for="password">Password</label>
                 <input class="formInput" type="password" id="password" name="password">
 
-                <input type="submit" value="LOGIN">
+                <label><input type="checkbox" name="adminOrUser" id="isAdminLogin"/>Login as Admin</label>
+
+                <input type="submit" value="LOGIN" onclick="return isAdmin();">
             </form>
         </div>
 
     </body>
+
+    <script>
+        function isAdmin(){
+            if(document.getElementById('isAdminLogin').checked){
+                window.open("adminhome.html");
+            } else {
+                window.open("home.html");
+            }
+        
+        }
+    </script>
 </html>

@@ -31,9 +31,15 @@
                 <label for="confirmpassword">Confirm Password</label>
                 <input class="formInput" type="confirmpassword" id="confirmpassword" name="confirmpassword">
 
-                <input type="submit" value="SIGNUP">
+                <a href="home.html"><input type="submit" value="SIGNUP" onclick="return toHomePage();"></a>
             </form>
         </div>
 
     </body>
+
+    <script>
+        function toHomePage(){
+            window.open("home.html");
+        }
+    </script>
 </html>

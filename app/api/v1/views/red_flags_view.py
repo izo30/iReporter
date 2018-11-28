@@ -58,3 +58,22 @@ class RedFlagsEndpoint(Resource):
             'status': 'ok',
             'red flags': red_flags
         }), 200)
+
+@api.route('/<int:red_flag_id>')
+class SingleRedFlag(Resource):
+    """Get single red flag""" 
+    def get(self, red_flag_id):
+        """Get a specific red flag when provided with an id"""
+        single_red_flag = RedFlags.get_red_flag(self, red_flag_id) 
+
+        if single_red_flag:
+            return make_response(jsonify({
+                'status': 'ok',
+                'message': 'success',
+                'red flag': single_red_flag
+            }), 200)
+
+        return make_response(jsonify({
+            'status': 'failed',
+            'message': 'not found'
+        }), 404)

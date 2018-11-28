@@ -33,3 +33,10 @@ class RedFlags():
     def get_all_red_flags(self):
         """Method to get all red flags"""
         return RedFlags.red_flags
+
+    def get_red_flag(self, red_flag_id):
+        """Method to get a single red flag given its id"""
+        red_flag_item = [red_flag for red_flag in RedFlags.red_flags if red_flag['red_flag_id'] == red_flag_id]
+        if red_flag_item:
+            return red_flag_item
+        return {'message':'red flag not found'}

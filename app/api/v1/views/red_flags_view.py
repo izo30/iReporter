@@ -48,3 +48,13 @@ class RedFlagsEndpoint(Resource):
             'message': 'Red Flag created successfully',
             'red flags': created_red_flag
         }), 201)
+
+    def get(self):
+        """Get all red flags"""
+        red_flags = RedFlags.get_all_red_flags(self)
+
+        return make_response(jsonify({
+            'message':  'success',
+            'status': 'ok',
+            'red flags': red_flags
+        }), 200)

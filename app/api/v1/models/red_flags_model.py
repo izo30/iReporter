@@ -29,3 +29,7 @@ class RedFlags():
         """Adding the red flag into red_flags list"""   
         self.red_flags.append(red_flag_item)
         return red_flag_item
+
+    def get_all_red_flags(self):
+        """Method to get all red flags"""
+        return RedFlags.red_flags

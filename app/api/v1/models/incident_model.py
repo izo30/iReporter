@@ -64,3 +64,13 @@ class Incident():
                 Incident.incidents[number] = edited_incident_item
                 return edited_incident_item
         return {'message':'incident not found'}
+
+    def delete_incident(self, incident_id):
+        """delete the incident"""
+        for number, incident in enumerate(Incident.incidents):
+            if incident['incident_id'] == incident_id:
+                if incident['status'] == 'draft':
+                    del incident
+                else: 
+                    return {'message':'incident is ' +incident['status']}
+        return {'message':'incident not found'}

@@ -122,6 +122,20 @@ class SingleIncident(Resource):
             'data': updated_incident
         }), 201)
 
+    def delete(self, incident_id):
+        """Delete a specific incident when provided with an id"""
+        delete_incident = Incident.delete_incident(self, incident_id) 
+        if delete_incident:
+            return make_response(jsonify({
+                'status': 'ok',
+                'message': 'success',
+                'data': delete_incident
+            }), 200)
+        return make_response(jsonify({
+            'status': 'failed',
+            'message': 'not found'
+        }), 404)
+
 @api.route('/admin/<int:incident_id>')
 class AdminSingleIncident(Resource):
     def put(self):

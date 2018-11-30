@@ -36,3 +36,10 @@ class Incident():
     """method to fetch for all incident records"""
     def get_all_incidents (self):
         return Incident.incidents
+
+    def get_incident(self, incident_id):
+        """Method to get a single incident given its id"""
+        incident_item = [incident for incident in Incident.incidents if incident['incident_id'] == incident_id]
+        if incident_item:
+            return incident_item
+        return {'message':'incident not found'}

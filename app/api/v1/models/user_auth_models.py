@@ -50,18 +50,8 @@ class User():
     def encode_auth_token(email, role):
         """ Generates an Auth token"""
         try:
-            payload = {
-                'exp': datetime.now() + timedelta(days=1, seconds=5),
-                'iat': datetime.now(),
-                'sub': email,
-                'role':role
-            }
-            
-            token = jwt.encode(
-                payload,
-                secret_key,
-                algorithm='HS256'
-            )
+            token = jwt.encode({'user' : email, 'role' : role, 'exp' : datetime.utcnow() + timedelta(minutes=30)}, secret_key)
+    
             return token
 
         except Exception as e:
@@ -71,9 +61,13 @@ class User():
     def decode_auth_token(auth_token):
         """Method to decode the auth token"""
         try:
-            payload = jwt.decode(auth_token, secret_key, options={'verify_iat': False})
+            payload = jwt.decode(auth_token, secret_key)
             return payload
         except jwt.ExpiredSignatureError:
             return {'message': 'Signature expired. Please log in again.'}
         except jwt.InvalidTokenError:
             return {'message': 'Invalid token. Please log in again.'}
+
+    @staticmethod
+    def decode(auth_token):
+        return auth_token.decode('UTF-8')

@@ -89,3 +89,48 @@ class IncidentEndpoint(Resource):
             'status': 'ok',
             'data': incidents
         }), 200)
+
+@api.route('/admin')
+class AdminIncidentEndpoint(Resource):
+    @api.doc(security='apikey')
+    @admin_required
+    def get(self):
+        """User authentication"""
+        authentication_header = request.headers.get('Authorization')
+        if authentication_header:    
+            try:
+                auth_token = authentication_header.split(" ")[1]
+                    
+                identity = User.decode_auth_token(auth_token)
+                print(identity)
+                if identity == 'Invalid token. Please log in again.':
+                    return make_response(jsonify({
+                        'status': 'failed',
+                        'message': 'Invalid token. Please log in again.'
+                    }), 401)
+
+            except Exception:
+                return make_response(jsonify({
+                    'status': 'failed',
+                    'message': 'You are not authorized'
+                }), 401)
+                
+            if auth_token:
+                if identity['role'] == 'attendant':
+                    return make_response(jsonify({
+                        'status': 'failed',
+                        'message': 'You are not an admin'
+                    }), 401)
+                incidents = Incident.get_all_incidents(self)
+                if len(incidents) == 0:
+                    return make_response(jsonify({
+                        'message':  'success',
+                        'status': 'ok',
+                        'incidents': 'Incidents are empty. Add an incident'
+                    }), 200)
+                return make_response(jsonify({
+                    'message':  'success',
+                    'status': 'ok',
+                    'data': incidents
+                }), 200)
+

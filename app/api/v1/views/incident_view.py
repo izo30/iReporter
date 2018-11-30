@@ -29,12 +29,13 @@ incident_fields = api.model('Incident', {
     'videos': fields.List,
     'comments': fields.String
 })
-@api.route('/create')
+@api.route('')
 class IncidentEndpoint(Resource):
     @api.expect(incident_fields)
     @api.doc(security='apikey')
     @token_required
     def post(self):
+        """Create an incident"""
         #User authentication
         authentication_header = request.headers.get('Authorization') 
         if authentication_header:
@@ -73,3 +74,18 @@ class IncidentEndpoint(Resource):
                     'data': created_incident
                 }), 201)
 
+    @api.doc(security='apikey')
+    def get(self):
+        """Get all incidents"""
+        incidents = Incident.get_all_incidents(self)
+        if len(incidents) == 0:
+            return make_response(jsonify({
+                'message':  'success',
+                'status': 'ok',
+                'incidents': 'Incidents are empty. Add an incident'
+            }), 200)
+        return make_response(jsonify({
+            'message':  'success',
+            'status': 'ok',
+            'data': incidents
+        }), 200)

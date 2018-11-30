@@ -16,8 +16,8 @@ class Incident():
         self.videos = videos
         self.comments = comments
 
+    """Method to create a new incident into list"""
     def create_incident(self):
-        """Method to create a new incident into list"""
         incident_item = dict(
             incident_id = self.incident_id,
             created_on = self.created_on,
@@ -32,3 +32,7 @@ class Incident():
         )    
         self.incidents.append(incident_item)
         return incident_item
+
+    """method to fetch for all incident records"""
+    def get_all_incidents (self):
+        return Incident.incidents

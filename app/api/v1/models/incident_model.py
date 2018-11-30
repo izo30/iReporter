@@ -43,3 +43,24 @@ class Incident():
         if incident_item:
             return incident_item
         return {'message':'incident not found'}
+
+    def edit_incident(self, incident_id):
+        """Method to edit an existing incident"""
+        edited_incident_item = dict(
+            incident_id = self.incident_id,
+            created_on = self.created_on,
+            created_by = self.created_by,
+            type = self.type,
+            latitude = self.latitude,
+            longitude = self.longitude,
+            status = self.status,
+            images = self.images,
+            videos = self.videos,
+            comments = self.comments
+        ) 
+        """edit the incident"""
+        for number, incident in enumerate(Incident.incidents):
+            if incident['incident_id'] == incident_id:
+                Incident.incidents[number] = edited_incident_item
+                return edited_incident_item
+        return {'message':'incident not found'}

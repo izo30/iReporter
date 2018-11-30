@@ -176,3 +176,25 @@ class SingleIncident(Resource):
                     'message': 'not found'
                 }), 404)
 
+    @api.expect(incident_fields)
+    def put(self, incident_id):
+        """Edit incident"""
+        args = parser.parse_args()
+        created_on = args['created_on']
+        created_by = args['created_by']
+        _type = args['type']
+        latitude = args['latitude']
+        longitude = args['longitude']
+        status = args['status']
+        images = args['images']
+        videos = args['videos']
+        comments = args['comments']
+
+        update_incident = Incident(created_on, created_by, _type, latitude, longitude, status, images, videos, comments)
+        updated_incident = update_incident.edit_incident(incident_id)
+        return make_response(jsonify({
+            'status': 'ok',
+            'message': 'Incident edited successfully',
+            'data': updated_incident
+        }), 201)
+

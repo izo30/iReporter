@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, Blueprint, json, make_response
 from flask_restplus import Resource, reqparse, Api, Namespace, fields
-from ..models.user_auth_models import User
+from app.api.v1.models.user_auth_models import User
 
 api = Namespace('User Endpoints', description='A collection of user endpoints')
 
@@ -13,7 +13,6 @@ parser.add_argument('username', help = 'This field cannot be blank')
 parser.add_argument('password', help = 'This field cannot be blank', required = True)
 parser.add_argument('role', help = 'This field cannot be blank')
 parser.add_argument('registered_on', help = 'This field cannot be blank')
-
 
 signup_fields = api.model('Signup', {
     'first_name' : fields.String,
@@ -85,13 +84,12 @@ class Login(Resource):
                 }), 200)
             if current_user and User.verify_hash(password, current_user['password']):
                 role = current_user['role']
-                email = current_user['email']
-                auth_token = User.encode_auth_token(email, role)   
-                if auth_token:
+                token = User.encode_auth_token(email, role)   
+                if True:
                     return make_response(jsonify({
                         'status' : 'ok',
                         'message' : 'Logged in successfully',
-                        'auth_token': auth_token.decode()
+                        'auth_token': token.decode('UTF-8')
                     }), 200) 
             else:
                 return make_response(jsonify({

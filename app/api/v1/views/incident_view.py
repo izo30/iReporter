@@ -2,9 +2,10 @@
 from flask import Flask, request, jsonify, Blueprint, json, make_response
 from flask_restplus import Resource, reqparse, Api, Namespace, fields
 from ..models.incident_model import Incident
-from ..models.user_auth_models import User
+from app.api.v1.utils.auth import admin_required, token_required, tokenRequired, adminRequired
+import json
 
-api = Namespace('Incident Endpoints', description='A collection of endpoints for the incident model; includes get, post, put and delete endpoints')
+api = Namespace('Incident Endpoints', description='A collection of endpoints for the incident model; includes get, post, put and delete endpoints', path='api/v1/incidents')
 
 parser = reqparse.RequestParser()
 parser.add_argument('created_on', help = 'This field cannot be blank', required = True)
@@ -24,10 +25,11 @@ incident_fields = api.model('Incident', {
     'latitude': fields.String,
     'longitude': fields.String,
     'status': fields.String,
-    'images': fields.List,
-    'videos': fields.List,
+    'images': fields.List(fields.String),
+    'videos': fields.List(fields.String),
     'comments': fields.String
 })
+
 @api.route('')
 class IncidentEndpoint(Resource):
     @api.expect(incident_fields)
@@ -69,8 +71,10 @@ class IncidentEndpoint(Resource):
 
 @api.route('/admin')
 class AdminIncidentEndpoint(Resource):
+    @api.doc(security='apikey')
+    @admin_required
     def get(self):
-        """User authentication"""
+        """Admin get all incidents"""
         incidents = Incident.get_all_incidents(self)
         if len(incidents) == 0:
             return make_response(jsonify({
@@ -118,7 +122,7 @@ class SingleIncident(Resource):
         updated_incident = update_incident.edit_incident(incident_id)
         return make_response(jsonify({
             'status': 'ok',
-            'message': 'Incident edited successfully',
+            'message': 'Successful',
             'data': updated_incident
         }), 201)
 
@@ -138,8 +142,11 @@ class SingleIncident(Resource):
 
 @api.route('/admin/<int:incident_id>')
 class AdminSingleIncident(Resource):
-    def put(self):
-        """Edit incident"""
+    @api.expect(incident_fields)
+    @api.doc(security='apikey')
+    @admin_required
+    def put(self, incident_id):
+        """Edit incident status"""
         args = parser.parse_args()
         created_on = args['created_on']
         created_by = args['created_by']
@@ -152,9 +159,9 @@ class AdminSingleIncident(Resource):
         comments = args['comments']
 
         update_incident = Incident(created_on, created_by, _type, latitude, longitude, status, images, videos, comments)
-        updated_incident = update_incident.edit_incident(incident_id)
+        updated_incident = update_incident.admin_edit_incident(incident_id)
         return make_response(jsonify({
             'status': 'ok',
-            'message': 'Incident edited successfully',
+            'message': 'Successful',
             'data': updated_incident
         }), 201)

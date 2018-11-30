@@ -5,7 +5,7 @@ class Incident():
     
     """ Initializing the constructor"""
     def __init__(self, created_on, created_by, type, latitude, longitude, status, images, videos, comments):
-        Incident.incident_id = len(Incident.incidents) + 1
+        self.incident_id = len(Incident.incidents) + 1
         self.created_on = created_on
         self.created_by = created_by
         self.type = type
@@ -47,7 +47,31 @@ class Incident():
     def edit_incident(self, incident_id):
         """Method to edit an existing incident"""
         edited_incident_item = dict(
-            incident_id = self.incident_id,
+            incident_id = incident_id,
+            created_on = self.created_on,
+            created_by = self.created_by,
+            type = self.type,
+            latitude = self.latitude,
+            longitude = self.longitude,
+            status = self.status,
+            images = self.images,
+            videos = self.videos,
+            comments = self.comments
+        ) 
+        """edit the incident"""
+        for number, incident in enumerate(Incident.incidents):
+            if incident['incident_id'] == incident_id:
+                if incident['status'] == 'draft':
+                    Incident.incidents[number] = edited_incident_item
+                    return edited_incident_item
+                else:
+                    return {'message':'incident status has changed'}
+        return {'message':'incident not found'}
+
+    def admin_edit_incident(self, incident_id):
+        """Method to edit incident incident"""
+        edited_incident_item = dict(
+            incident_id = incident_id,
             created_on = self.created_on,
             created_by = self.created_by,
             type = self.type,
@@ -70,7 +94,8 @@ class Incident():
         for number, incident in enumerate(Incident.incidents):
             if incident['incident_id'] == incident_id:
                 if incident['status'] == 'draft':
-                    del incident
+                    del Incident.incidents[number]
+                    return {'message':'deleted'}
                 else: 
-                    return {'message':'incident is ' +incident['status']}
+                    return {'message':'incident status has changed'}
         return {'message':'incident not found'}

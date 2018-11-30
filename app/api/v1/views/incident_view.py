@@ -122,7 +122,7 @@ class SingleIncident(Resource):
             'data': updated_incident
         }), 201)
 
-@api.route('/<int:incident_id>')
+@api.route('/admin/<int:incident_id>')
 class AdminSingleIncident(Resource):
     def put(self):
         """Edit incident"""

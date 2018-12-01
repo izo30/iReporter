@@ -2,7 +2,7 @@
 from flask import Flask, request, jsonify, Blueprint, json, make_response
 from flask_restplus import Resource, reqparse, Api, Namespace, fields
 from ..models.incident_model import Incident
-from app.api.v1.utils.auth import admin_required, token_required, tokenRequired, adminRequired
+from app.api.v1.utils.auth import admin_required, token_required, tokenRequired
 import json
 
 api = Namespace('Incident Endpoints', description='A collection of endpoints for the incident model; includes get, post, put and delete endpoints', path='api/v1/incidents')
@@ -33,6 +33,8 @@ incident_fields = api.model('Incident', {
 @api.route('')
 class IncidentEndpoint(Resource):
     @api.expect(incident_fields)
+    @api.doc(security='apikey')
+    @tokenRequired
     def post(self):
         """ Create a new incident """
         args = parser.parse_args()
@@ -54,6 +56,8 @@ class IncidentEndpoint(Resource):
             'data': created_incident
         }), 201)
 
+    @api.doc(security='apikey')
+    @tokenRequired
     def get(self):
         """Get all incidents"""
         incidents = Incident.get_all_incidents(self)
@@ -72,7 +76,7 @@ class IncidentEndpoint(Resource):
 @api.route('/admin')
 class AdminIncidentEndpoint(Resource):
     @api.doc(security='apikey')
-    @admin_required
+    @tokenRequired
     def get(self):
         """Admin get all incidents"""
         incidents = Incident.get_all_incidents(self)
@@ -90,6 +94,8 @@ class AdminIncidentEndpoint(Resource):
 
 @api.route('/<int:incident_id>')
 class SingleIncident(Resource):
+    @api.doc(security='apikey')
+    @tokenRequired
     def get(self, incident_id):
         """Get a specific incident when provided with an id"""
         single_incident = Incident.get_incident(self, incident_id) 
@@ -105,6 +111,8 @@ class SingleIncident(Resource):
         }), 404)
 
     @api.expect(incident_fields)
+    @api.doc(security='apikey')
+    @tokenRequired
     def put(self, incident_id):
         """Edit incident"""
         args = parser.parse_args()
@@ -126,6 +134,8 @@ class SingleIncident(Resource):
             'data': updated_incident
         }), 201)
 
+    @api.doc(security='apikey')
+    @tokenRequired
     def delete(self, incident_id):
         """Delete a specific incident when provided with an id"""
         delete_incident = Incident.delete_incident(self, incident_id) 
@@ -144,7 +154,7 @@ class SingleIncident(Resource):
 class AdminSingleIncident(Resource):
     @api.expect(incident_fields)
     @api.doc(security='apikey')
-    @admin_required
+    @tokenRequired
     def put(self, incident_id):
         """Edit incident status"""
         args = parser.parse_args()

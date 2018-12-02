@@ -41,8 +41,8 @@ class Incident():
         """Method to get a single incident given its id"""
         incident_item = [incident for incident in Incident.incidents if incident['incident_id'] == incident_id]
         if incident_item:
-            return incident_item
-        return {'message':'incident not found'}
+            return incident_item[0]
+        return 'incident not found'
 
     def edit_incident(self, incident_id):
         """Method to edit an existing incident"""
@@ -66,28 +66,7 @@ class Incident():
                     return edited_incident_item
                 else:
                     return {'message':'incident status has changed'}
-        return {'message':'incident not found'}
-
-    def admin_edit_incident(self, incident_id):
-        """Method to edit incident incident"""
-        edited_incident_item = dict(
-            incident_id = incident_id,
-            created_on = self.created_on,
-            created_by = self.created_by,
-            type = self.type,
-            latitude = self.latitude,
-            longitude = self.longitude,
-            status = self.status,
-            images = self.images,
-            videos = self.videos,
-            comments = self.comments
-        ) 
-        """edit the incident"""
-        for number, incident in enumerate(Incident.incidents):
-            if incident['incident_id'] == incident_id:
-                Incident.incidents[number] = edited_incident_item
-                return edited_incident_item
-        return {'message':'incident not found'}
+        return 'incident not found'
 
     def delete_incident(self, incident_id):
         """delete the incident"""
@@ -95,7 +74,7 @@ class Incident():
             if incident['incident_id'] == incident_id:
                 if incident['status'] == 'draft':
                     del Incident.incidents[number]
-                    return {'message':'deleted'}
+                    return 'deleted'
                 else: 
-                    return {'message':'incident status has changed'}
-        return {'message':'incident not found'}
+                    return 'incident status has changed'
+        return 'incident not found'

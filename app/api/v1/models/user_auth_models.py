@@ -61,7 +61,7 @@ class User():
     def decode_auth_token(auth_token):
         """Method to decode the auth token"""
         try:
-            payload = jwt.decode(auth_token, secret_key)
+            payload = jwt.decode(auth_token, secret_key, algorithms=['HS256'])
             return payload
         except jwt.ExpiredSignatureError:
             return {'message': 'Signature expired. Please log in again.'}

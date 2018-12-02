@@ -36,7 +36,7 @@ class IncidentEndpoint(Resource):
     @api.doc(security='apikey')
     @tokenRequired
     def post(self):
-        """ Create a new incident """
+        """Create a new incident """
         args = parser.parse_args()
         created_on = args['created_on']
         created_by = args['created_by']
@@ -52,7 +52,7 @@ class IncidentEndpoint(Resource):
         created_incident = new_incident.create_incident()
         return make_response(jsonify({
             'status': 'ok',
-            'message': 'incident created successfully',
+            'message': 'Incident created successfully',
             'data': created_incident
         }), 201)
 
@@ -99,16 +99,11 @@ class SingleIncident(Resource):
     def get(self, incident_id):
         """Get a specific incident when provided with an id"""
         single_incident = Incident.get_incident(self, incident_id) 
-        if single_incident:
-            return make_response(jsonify({
+        return make_response(jsonify({
                 'status': 'ok',
                 'message': 'success',
                 'data': single_incident
             }), 200)
-        return make_response(jsonify({
-            'status': 'failed',
-            'message': 'not found'
-        }), 404)
 
     @api.expect(incident_fields)
     @api.doc(security='apikey')
@@ -139,16 +134,11 @@ class SingleIncident(Resource):
     def delete(self, incident_id):
         """Delete a specific incident when provided with an id"""
         delete_incident = Incident.delete_incident(self, incident_id) 
-        if delete_incident:
-            return make_response(jsonify({
-                'status': 'ok',
-                'message': 'success',
-                'data': delete_incident
-            }), 200)
         return make_response(jsonify({
-            'status': 'failed',
-            'message': 'not found'
-        }), 404)
+            'status': 'ok',
+            'message': 'success',
+            'data': delete_incident
+        }), 200)
 
 @api.route('/admin/<int:incident_id>')
 class AdminSingleIncident(Resource):
@@ -169,7 +159,7 @@ class AdminSingleIncident(Resource):
         comments = args['comments']
 
         update_incident = Incident(created_on, created_by, _type, latitude, longitude, status, images, videos, comments)
-        updated_incident = update_incident.admin_edit_incident(incident_id)
+        updated_incident = update_incident.edit_incident(incident_id)
         return make_response(jsonify({
             'status': 'ok',
             'message': 'Successful',

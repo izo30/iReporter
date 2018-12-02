@@ -78,13 +78,13 @@ def tokenRequired(f):
         if not token:
             return {'message' : 'Token is missing.'}, 401
 
-        if identity['message'] == 'Invalid token. Please log in again.':
-            return {'message' : 'Invalid token. Please log in again.'}, 401
+        # if identity['message'] == 'Invalid token. Please log in again.':
+        #     return {'message' : 'Invalid token. Please log in again.'}, 401
 
-        if identity['message'] == 'Signature expired. Please log in again.':
-            return {'message' : 'Signature expired. Please log in again.'}, 401
+        # if identity['message'] == 'Signature expired. Please log in again.':
+        #     return {'message' : 'Signature expired. Please log in again.'}, 401
 
-        print('IDENTITY: {}'.format(identity['message']))
+        print('IDENTITY: {}'.format(identity))
 
         return f(*args, **kwargs)
     return decorated  

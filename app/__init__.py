@@ -13,3 +13,16 @@ def create_app(config):
     app.config['testing'] = True
 
     return app
+
+def create_testing_app(config):
+    '''configuring the flask app'''
+    app = Flask(__name__)
+
+    from .api.v1 import version1 as v1
+    app.register_blueprint(v1)
+   
+    app.config.from_object(app_config[config])
+    app.url_map.strict_slashes = False
+    app.config['testing'] = True
+
+    return app

@@ -64,7 +64,7 @@ class User():
     def encode_auth_token(email, role):
         """ Generates an Auth token"""
         try:
-            token = jwt.encode({'user' : email, 'role' : role, 'exp' : datetime.utcnow() + timedelta(minutes=1)}, secret_key)
+            token = jwt.encode({'user' : email, 'role' : role, 'exp' : datetime.utcnow() + timedelta(minutes=1440)}, secret_key)
     
             return token
 

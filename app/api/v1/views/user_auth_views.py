@@ -12,7 +12,6 @@ parser.add_argument('phone', help = 'This field cannot be blank')
 parser.add_argument('username', help = 'This field cannot be blank')
 parser.add_argument('password', help = 'This field cannot be blank', required = True)
 parser.add_argument('role', help = 'This field cannot be blank')
-parser.add_argument('registered_on', help = 'This field cannot be blank')
 
 signup_fields = api.model('Signup', {
     'first_name' : fields.String,
@@ -21,8 +20,7 @@ signup_fields = api.model('Signup', {
     'phone' : fields.String,
     'username' : fields.String,
     'password': fields.String,
-    'role': fields.String,
-    'registered_on': fields.DateTime
+    'role': fields.String
 })
 
 """user regitration"""
@@ -38,12 +36,23 @@ class Signup(Resource):
         username = args['username']
         password = args['password']
         role = args['role']
-        registered_on = args['registered_on']
+
+        if not User.validate_password(password):
+            return make_response(jsonify({
+                'status': 'fail',
+                'message' : 'the password should contain a small and a capital letter, a number and a special character'
+            }))
+
+        if not User.validate_email(email):
+            return make_response(jsonify({
+                'status': 'fail',
+                'message' : 'invalid email'
+            }))
         
         found_email = User.get_single_user(self, email)
         if found_email == 'not found':
             try:    
-                new_user = User(first_name, last_name, email, phone, username, User.generate_hash(password), role, registered_on)
+                new_user = User(first_name, last_name, email, phone, username, User.generate_hash(password), role)
                 created_user = new_user.create_user()
                 return make_response(jsonify({
                     'status': 'ok',
@@ -74,6 +83,12 @@ class Login(Resource):
         args = parser.parse_args()
         email = args['email']
         password = args['password']
+
+        if not User.validate_email(email):
+            return make_response(jsonify({
+                'status': 'fail',
+                'message' : 'invalid email'
+            }))
                 
         try:
             current_user = User.get_single_user(self, email)

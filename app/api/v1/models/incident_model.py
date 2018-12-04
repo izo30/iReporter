@@ -1,12 +1,14 @@
+import datetime 
+
 """Incident model class"""
 class Incident():
     incident_id = 1
     incidents = []
     
     """ Initializing the constructor"""
-    def __init__(self, created_on, created_by, type, latitude, longitude, status, images, videos, comments):
+    def __init__(self, created_by, type, latitude, longitude, status, images, videos, comments):
         self.incident_id = len(Incident.incidents) + 1
-        self.created_on = created_on
+        self.created_on = datetime.datetime.now()
         self.created_by = created_by
         self.type = type
         self.latitude = latitude
@@ -42,7 +44,7 @@ class Incident():
         incident_item = [incident for incident in Incident.incidents if incident['incident_id'] == incident_id]
         if incident_item:
             return incident_item[0]
-        return 'incident not found'
+        return "incident not found"
 
     def edit_incident(self, incident_id):
         """Method to edit an existing incident"""

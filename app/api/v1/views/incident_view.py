@@ -2,13 +2,12 @@
 from flask import Flask, request, jsonify, Blueprint, json, make_response
 from flask_restplus import Resource, reqparse, Api, Namespace, fields
 from ..models.incident_model import Incident
-from app.api.v1.utils.auth import admin_required, token_required, tokenRequired
+from app.api.v1.utils.auth import admin_required, token_required
 import json
 
 api = Namespace('Incident Endpoints', description='A collection of endpoints for the incident model; includes get, post, put and delete endpoints', path='api/v1/incidents')
 
 parser = reqparse.RequestParser()
-parser.add_argument('created_on', help = 'This field cannot be blank', required = True)
 parser.add_argument('created_by', help = 'This field cannot be blank', required = True)
 parser.add_argument('type', help = 'This field cannot be blank', required = True)
 parser.add_argument('latitude', help = 'This field cannot be blank', required = True)
@@ -19,7 +18,6 @@ parser.add_argument('videos', help = 'This field cannot be blank', required = Tr
 parser.add_argument('comments', help = 'This field cannot be blank', required = True)
 
 incident_fields = api.model('Incident', {
-    'created_on' : fields.DateTime,
     'created_by': fields.String,
     'type': fields.String,
     'latitude': fields.String,
@@ -34,11 +32,10 @@ incident_fields = api.model('Incident', {
 class IncidentEndpoint(Resource):
     @api.expect(incident_fields)
     @api.doc(security='apikey')
-    @tokenRequired
+    @token_required
     def post(self):
         """Create a new incident """
         args = parser.parse_args()
-        created_on = args['created_on']
         created_by = args['created_by']
         _type = args['type']
         latitude = args['latitude']
@@ -48,16 +45,16 @@ class IncidentEndpoint(Resource):
         videos = args['videos']
         comments = args['comments']
 
-        new_incident = Incident(created_on, created_by, _type, latitude, longitude, status, images, videos, comments)
+        new_incident = Incident(created_by, _type, latitude, longitude, status, images, videos, comments)
         created_incident = new_incident.create_incident()
         return make_response(jsonify({
             'status': 'ok',
-            'message': 'Incident created successfully',
+            'message': 'Success',
             'data': created_incident
         }), 201)
 
     @api.doc(security='apikey')
-    @tokenRequired
+    @token_required
     def get(self):
         """Get all incidents"""
         incidents = Incident.get_all_incidents(self)
@@ -76,7 +73,7 @@ class IncidentEndpoint(Resource):
 @api.route('/admin')
 class AdminIncidentEndpoint(Resource):
     @api.doc(security='apikey')
-    @tokenRequired
+    @admin_required
     def get(self):
         """Admin get all incidents"""
         incidents = Incident.get_all_incidents(self)
@@ -95,7 +92,7 @@ class AdminIncidentEndpoint(Resource):
 @api.route('/<int:incident_id>')
 class SingleIncident(Resource):
     @api.doc(security='apikey')
-    @tokenRequired
+    @token_required
     def get(self, incident_id):
         """Get a specific incident when provided with an id"""
         single_incident = Incident.get_incident(self, incident_id) 
@@ -107,11 +104,10 @@ class SingleIncident(Resource):
 
     @api.expect(incident_fields)
     @api.doc(security='apikey')
-    @tokenRequired
+    @token_required
     def put(self, incident_id):
         """Edit incident"""
         args = parser.parse_args()
-        created_on = args['created_on']
         created_by = args['created_by']
         _type = args['type']
         latitude = args['latitude']
@@ -121,7 +117,7 @@ class SingleIncident(Resource):
         videos = args['videos']
         comments = args['comments']
 
-        update_incident = Incident(created_on, created_by, _type, latitude, longitude, status, images, videos, comments)
+        update_incident = Incident(created_by, _type, latitude, longitude, status, images, videos, comments)
         updated_incident = update_incident.edit_incident(incident_id)
         return make_response(jsonify({
             'status': 'ok',
@@ -130,7 +126,7 @@ class SingleIncident(Resource):
         }), 201)
 
     @api.doc(security='apikey')
-    @tokenRequired
+    @token_required
     def delete(self, incident_id):
         """Delete a specific incident when provided with an id"""
         delete_incident = Incident.delete_incident(self, incident_id) 
@@ -144,11 +140,10 @@ class SingleIncident(Resource):
 class AdminSingleIncident(Resource):
     @api.expect(incident_fields)
     @api.doc(security='apikey')
-    @tokenRequired
+    @admin_required
     def put(self, incident_id):
         """Edit incident status"""
         args = parser.parse_args()
-        created_on = args['created_on']
         created_by = args['created_by']
         _type = args['type']
         latitude = args['latitude']
@@ -158,7 +153,7 @@ class AdminSingleIncident(Resource):
         videos = args['videos']
         comments = args['comments']
 
-        update_incident = Incident(created_on, created_by, _type, latitude, longitude, status, images, videos, comments)
+        update_incident = Incident(created_by, _type, latitude, longitude, status, images, videos, comments)
         updated_incident = update_incident.edit_incident(incident_id)
         return make_response(jsonify({
             'status': 'ok',

@@ -10,24 +10,20 @@ login_url = 'api/v1/auth/login'
 class TestUser(BaseTest):
 
     def test_create_user(self):
-        with self.client():
-            response = self.client().post(reg_url, data=json.dumps(dict(
-                first_name = 'brian',
-                last_name = 'wainaina',
-                email = 'brian@gmail.com',
-                phone = '0736547657', 
-                username = 'brian',
-                password = 'F31+25e9',
-                role = 'user',
-                registered_on = 'Friday, 30 November 2018'
-            )), 
-            content_type = 'application/json'
-        )
-            result = json.loads(response.data)
-            self.assertEqual('User created successfully', result['message'])
-            self.assertEqual(response.status_code, 201)
-            self.assertEqual('ok', result['status'])
-            self.assertTrue(response.content_type == 'application/json')
+        response = self.client().post(reg_url, data=json.dumps(dict(
+            first_name = 'brian',
+            last_name = 'wainaina',
+            email = 'brian@gmail.com',
+            phone = '0736547657', 
+            username = 'brian',
+            password = 'F31+25e9',
+            role = 'user'
+        )), content_type = 'application/json')
+        result = json.loads(response.data)
+        self.assertEqual('User created successfully', result['message'])
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual('ok', result['status'])
+        self.assertTrue(response.content_type == 'application/json')
 
     def test_get_single_user(self):
         with self.client():
@@ -49,8 +45,7 @@ class TestUser(BaseTest):
             phone = '0736547657', 
             username = 'isaac',
             password = 'F31+25e9',
-            role = 'user',
-            registered_on = 'Friday, 30 November 2018'
+            role = 'user'
         )
         with self.client():
             response = self.client().post(reg_url, data=json.dumps(dict(
@@ -60,8 +55,7 @@ class TestUser(BaseTest):
                 phone = '0736547657', 
                 username = 'isaac',
                 password = 'F31+25e9',
-                role = 'user',
-                registered_on = 'Friday, 30 November 2018'
+                role = 'user'
             )), content_type = 'application/json')
             result = json.loads(response.data)
             self.assertEqual('fail', result['status'])
@@ -80,8 +74,7 @@ class TestUser(BaseTest):
                 phone = '0736547657', 
                 username = 'isaac',
                 password = 'F31+25e9',
-                role = 'user',
-                registered_on = 'Friday, 30 November 2018'
+                role = 'user'
             )), content_type = 'application/json')
 
             result = json.loads(response.data)
@@ -112,8 +105,7 @@ class TestUser(BaseTest):
                 phone = '0736547657', 
                 username = 'isaac',
                 password = 'F31+25e9',
-                role = 'user',
-                registered_on = 'Friday, 30 November 2018'
+                role = 'user'
         )
 
         auth_token = user.encode_auth_token(user.email, user.role)
@@ -122,15 +114,48 @@ class TestUser(BaseTest):
     def test_decode_auth_token(self):
         user = User(
             first_name = 'isaac',
-                last_name = 'wangethi',
-                email = 'isaac@gmail.com',
-                phone = '0736547657', 
-                username = 'isaac',
-                password = 'F31+25e9',
-                role = 'user',
-                registered_on = 'Friday, 30 November 2018'
+            last_name = 'wangethi',
+            email = 'isaac@gmail.com',
+            phone = '0736547657', 
+            username = 'isaac',
+            password = 'F31+25e9',
+            role = 'user'
         )
 
         auth_token = user.encode_auth_token(user.email, user.role)
         self.assertTrue(isinstance(auth_token, bytes))
         self.assertTrue(User.decode_auth_token(auth_token)['role'] == 'user')
+
+    def test_user_password_validation(self):
+        response = self.client().post(reg_url, data=json.dumps(dict(
+            first_name = 'brian',
+            last_name = 'wainaina',
+            email = 'brian@gmail.com',
+            phone = '0736547657', 
+            username = 'brian',
+            password = '123456',
+            role = 'user'
+        )), content_type = 'application/json')
+
+        result = json.loads(response.data)
+        self.assertEqual('the password should contain a small and a capital letter, a number and a special character', result['message'])
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual('fail', result['status'])
+        self.assertTrue(response.content_type == 'application/json')
+
+    def test_user_email_validation(self):
+        response = self.client().post(reg_url, data=json.dumps(dict(
+            first_name = 'brian',
+            last_name = 'wainaina',
+            email = 'briangmail.com',
+            phone = '0736547657', 
+            username = 'brian',
+            password = 'F31+25e9',
+            role = 'user'
+        )), content_type = 'application/json')
+
+        result = json.loads(response.data)
+        self.assertEqual('invalid email', result['message'])
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual('fail', result['status'])
+        self.assertTrue(response.content_type == 'application/json')

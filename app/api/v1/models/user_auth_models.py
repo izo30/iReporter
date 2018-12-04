@@ -1,13 +1,15 @@
+from flask import jsonify
 from passlib.hash import pbkdf2_sha256 as sha256
 from app.instance.config import secret_key
 from datetime import datetime, timedelta
 import jwt
+import re
 
 class User():
     user_id = 1
     users = []
 
-    def __init__(self, first_name, last_name, email, phone, username, password, role, registered_on):
+    def __init__(self, first_name, last_name, email, phone, username, password, role):
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
@@ -15,7 +17,7 @@ class User():
         self.username = username
         self.password =password
         self.role = role
-        self.registered_on = registered_on
+        self.registered_on = datetime.now()
 
     def create_user(self):
         user = dict(
@@ -47,10 +49,22 @@ class User():
         return sha256.verify(password, hash)
 
     @staticmethod
+    def validate_password(password):
+        if re.match(r"(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{8,})", password):
+            return True
+        return False
+
+    @staticmethod
+    def validate_email(email):
+        if re.match(r"([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", email):
+            return True
+        return False
+
+    @staticmethod
     def encode_auth_token(email, role):
         """ Generates an Auth token"""
         try:
-            token = jwt.encode({'user' : email, 'role' : role, 'exp' : datetime.utcnow() + timedelta(minutes=30)}, secret_key)
+            token = jwt.encode({'user' : email, 'role' : role, 'exp' : datetime.utcnow() + timedelta(minutes=1)}, secret_key)
     
             return token
 
@@ -64,10 +78,6 @@ class User():
             payload = jwt.decode(auth_token, secret_key, algorithms=['HS256'])
             return payload
         except jwt.ExpiredSignatureError:
-            return {'message': 'Signature expired. Please log in again.'}
+            return 'Signature expired. Please log in again.'
         except jwt.InvalidTokenError:
-            return {'message': 'Invalid token. Please log in again.'}
-
-    @staticmethod
-    def decode(auth_token):
-        return auth_token.decode('UTF-8')
+            return 'Invalid token. Please log in again.'

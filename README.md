@@ -13,8 +13,8 @@ A system for reporting any form of corruption to the appropriate authorities and
 | `POST` | /api/v1/incidents | Create a new incident |
 | `GET` | /api/v1/incidents | Get all incidents |
 | `GET` | /api/v1/incidents/admin | Admin get all incidents |
-| `PUT` | /api/v1/incidents/admin/incidentid | Edit incident status |
-| `PUT` | /api/v1/incidents/incidentid | Edit an incident |
+| `PUT` | /api/v1/incidents/admin/incident_id | Edit incident status |
+| `PUT` | /api/v1/incidents/incident_id | Edit an incident |
 | `DELETE` | /api/v1/incidents/incident_id | Delete a specific incident |
 | `GET` | /api/v1/incidents/incident_id | Get a specific incident |
 

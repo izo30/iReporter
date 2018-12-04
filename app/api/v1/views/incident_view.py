@@ -62,7 +62,7 @@ class IncidentEndpoint(Resource):
             return make_response(jsonify({
                 'message':  'success',
                 'status': 'ok',
-                'incidents': 'Incidents are empty. Add an incident'
+                'incidents': incidents
             }), 200)
         return make_response(jsonify({
             'message':  'success',
@@ -81,7 +81,7 @@ class AdminIncidentEndpoint(Resource):
             return make_response(jsonify({
                 'message':  'success',
                 'status': 'ok',
-                'incidents': 'Incidents are empty. Add an incident'
+                'incidents': incidents
             }), 200)
         return make_response(jsonify({
             'message':  'success',

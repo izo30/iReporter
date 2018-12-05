@@ -6,7 +6,6 @@ import jwt
 import re
 
 class User():
-    user_id = 1
     users = []
 
     def __init__(self, first_name, last_name, email, phone, username, password, role):
@@ -30,15 +29,28 @@ class User():
             role = self.role,
             registered_on = self.registered_on
         )
+
+        empty_field = User.check_if_empty(user)
+        if empty_field:
+            return empty_field
+
+        data_type = User.validate_data(user)
+        if data_type:
+            return data_type
+
         User.users.append(user)
         return user
 
     def get_single_user(self, email):
         """Retrieve user details by email"""
+
+        if email is None or email == "":
+            return "Email should not be empty"
+
         single_user = [user for user in User.users if user['email'] == email]
         if single_user:
             return single_user[0]
-        return 'not found'
+        return 'Not found'
 
     @staticmethod
     def generate_hash(password):
@@ -81,3 +93,38 @@ class User():
             return 'Signature expired. Please log in again.'
         except jwt.InvalidTokenError:
             return 'Invalid token. Please log in again.'
+
+    @staticmethod
+    def check_if_empty(incident):
+        for key, value in incident.items():
+            if value is None or value == "":
+                return "Field should not be empty"
+
+    @staticmethod
+    def check_if_role(role):
+        if role == "admin":
+            return True
+        elif role == "user":
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def validate_data(user):
+        for key, value in user.items():
+            if key == 'first_name' and not re.match(r"(^[a-zA-Z]+$)", value):
+                return "First name should contain letters only"
+            elif key == 'last_name' and not re.match(r"(^[a-zA-Z]+$)", value):
+                return "Last name should contain letters only"
+            elif key == 'email' and not User.validate_email(value):
+                return "Invalid email"
+            elif key == 'phone' and not re.match(r"^([\s\d]+)$", value):
+                return "Invalid phone number"
+            elif key == 'username' and not re.match(r"[a-z A-Z0-9\_\"]+$", value):
+                return "Username should contain only numbers, letters and underscore"
+            elif key == 'password' and not User.validate_password(value):
+                return "The password should contain a small and a capital letter, a number and a special character"
+            elif key == 'role' and not User.check_if_role(value):
+                return "Role should be admin or user"
+
+

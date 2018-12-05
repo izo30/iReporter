@@ -4,15 +4,6 @@ from app.api.v1.models.user_auth_models import User
 
 api = Namespace('User Endpoints', description='A collection of user endpoints')
 
-parser = reqparse.RequestParser()
-parser.add_argument('first_name', help = 'This field cannot be blank')
-parser.add_argument('last_name', help = 'This field cannot be blank')
-parser.add_argument('email', help = 'This field cannot be blank', required = True)
-parser.add_argument('phone', help = 'This field cannot be blank')
-parser.add_argument('username', help = 'This field cannot be blank')
-parser.add_argument('password', help = 'This field cannot be blank', required = True)
-parser.add_argument('role', help = 'This field cannot be blank')
-
 signup_fields = api.model('Signup', {
     'first_name' : fields.String,
     'last_name' : fields.String,
@@ -26,9 +17,19 @@ signup_fields = api.model('Signup', {
 """user regitration"""
 @api.route('/signup')
 class Signup(Resource):
+
+    parser = reqparse.RequestParser()
+    parser.add_argument('first_name', help = 'This field cannot be blank', required = True)
+    parser.add_argument('last_name', help = 'This field cannot be blank', required = True)
+    parser.add_argument('email', help = 'This field cannot be blank', required = True)
+    parser.add_argument('phone', help = 'This field cannot be blank', required = True)
+    parser.add_argument('username', help = 'This field cannot be blank', required = True)
+    parser.add_argument('password', help = 'This field cannot be blank', required = True)
+    parser.add_argument('role', help = 'This field cannot be blank', required = True)
+
     @api.expect(signup_fields)
     def post(self):
-        args = parser.parse_args()
+        args = Signup.parser.parse_args()
         first_name = args['first_name']
         last_name = args['last_name']
         email = args['email']
@@ -39,37 +40,36 @@ class Signup(Resource):
 
         if not User.validate_password(password):
             return make_response(jsonify({
-                'status': 'fail',
-                'message' : 'the password should contain a small and a capital letter, a number and a special character'
-            }))
+                'status': 'Fail',
+                'message': 'The password should contain a small and a capital letter, a number and a special character'
+            }), 400)
 
         if not User.validate_email(email):
             return make_response(jsonify({
-                'status': 'fail',
-                'message' : 'invalid email'
-            }))
+                'status': 'Fail',
+                'message': 'Invalid email'
+            }), 400)
         
         found_email = User.get_single_user(self, email)
-        if found_email == 'not found':
-            try:    
-                new_user = User(first_name, last_name, email, phone, username, User.generate_hash(password), role)
-                created_user = new_user.create_user()
+        if found_email == 'Not found':
+            new_user = User(first_name, last_name, email, phone, username, User.generate_hash(password), role)
+            created_user = new_user.create_user()
+
+            if created_user == "Field should not be empty":
                 return make_response(jsonify({
-                    'status': 'ok',
-                    'message': 'User created successfully',
-                    'users': created_user
-                }), 201)
-            
-            except Exception as e:
-                return make_response(jsonify({
-                'message' : str(e),
-                'status' : 'failed'
-            }), 500)
+                    'status': 'Success',
+                    'message': created_user
+                }), 400)
+
+            return make_response(jsonify({
+                'status': 'Success',
+                'data': created_user
+            }), 201)
 
         return make_response(jsonify({
-            'status': 'fail',
+            'status': 'Fail',
             'message' : 'Email already exists, please log in'
-        }))
+        }), 303)
 
 login_fields = api.model('Login', {
     'email': fields.String,
@@ -78,42 +78,57 @@ login_fields = api.model('Login', {
 """user login"""
 @api.route('/login')
 class Login(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument('email', help = 'This field cannot be blank', required = True)
+    parser.add_argument('password', help = 'This field cannot be blank', required = True)
+
     @api.expect(login_fields)
     def post(self):
-        args = parser.parse_args()
+        args = Login.parser.parse_args()
         email = args['email']
         password = args['password']
 
+        if email is None or email == "":
+            return make_response(jsonify({
+                'status': 'Fail',
+                'message': 'Email should be provided'
+            }), 400)
+
+        if password is None or password == "":
+            return make_response(jsonify({
+                'status': 'Fail',
+                'message': 'Password should be provided'
+            }), 400)
+
         if not User.validate_email(email):
             return make_response(jsonify({
-                'status': 'fail',
-                'message' : 'invalid email'
-            }))
+                'status': 'Fail',
+                'message': 'Invalid email'
+            }), 400)
                 
         try:
             current_user = User.get_single_user(self, email)
             if current_user == 'not found':
                 return make_response(jsonify({
-                    'status': 'success',
+                    'status': 'Fail',
                     'message': 'User does not exist, sign up!'
-                }), 200)
+                }), 400)
             if current_user and User.verify_hash(password, current_user['password']):
                 role = current_user['role']
                 token = User.encode_auth_token(email, role)   
-                if True:
-                    return make_response(jsonify({
-                        'status' : 'ok',
-                        'message' : 'Logged in successfully',
-                        'auth_token': token.decode('UTF-8')
-                    }), 200) 
+                return make_response(jsonify({
+                    'status' : 'Success',
+                    'message' : 'Logged in successfully',
+                    'auth_token': token.decode('UTF-8')
+                }), 200) 
             else:
                 return make_response(jsonify({
-                    'message' : 'Incorrect email or password',
-                    'status' : 'fail'
+                    'status' : 'Fail',
+                    'message' : 'Incorrect email or password'
                 }), 400)
 
         except Exception as e:
             return make_response(jsonify({
-                'message' : str(e),
-                'status' : 'failed'
+                'status' : 'Fail',
+                'message' : str(e)
             }), 500)

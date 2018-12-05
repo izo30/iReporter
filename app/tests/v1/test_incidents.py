@@ -15,10 +15,10 @@ class TestIncidents(BaseTest):
         "longitude": 2.456,
         "status": "draft",
         "images": [
-            "image1","image2"
+            "image1.jpg"
         ],
         "videos": [
-            "video1","video2"
+            "video1.mov"
         ],
         "comments": "the police asked for a bribe"
     }
@@ -30,10 +30,10 @@ class TestIncidents(BaseTest):
         "longitude": 2.456,
         "status": "under investigation",
         "images": [
-            "image1","image2"
+            "image1.png","image2"
         ],
         "videos": [
-            "video1","video2"
+            "video1.mp4","video2"
         ],
         "comments": "kahawa west road needs maintenance"
     }
@@ -45,10 +45,10 @@ class TestIncidents(BaseTest):
         "longitude": 2.456,
         "status": "resolved",
         "images": [
-            "image1","image2"
+            "image1.jpg","image2"
         ],
         "videos": [
-            "video1","video2"
+            "video1.mp4","video2"
         ],
         "comments": "the chief wanted more money"
     }

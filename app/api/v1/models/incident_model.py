@@ -1,4 +1,7 @@
 import datetime 
+from flask import request
+from app.api.v1.models.user_auth_models import User
+import re
 
 """Incident model class"""
 class Incident():
@@ -35,6 +38,10 @@ class Incident():
         is_empty = Incident.check_if_empty(incident_item)  
         if is_empty:
             return is_empty
+
+        is_valid = Incident.validate_data(incident_item)  
+        if is_valid:
+            return is_valid
 
         self.incidents.append(incident_item)
         return incident_item
@@ -95,3 +102,43 @@ class Incident():
         for key, value in incident.items():
             if value is None or value == "":
                 return "Field should not be empty"
+
+    @staticmethod
+    def check_if_type(incident_type):
+        if incident_type == "intervention":
+            return True
+        elif incident_type == "red flag":
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def check_if_status(status):
+        if status == "draft":
+            return True
+        elif status == "under investigation":
+            return True
+        elif status == "resolved":
+            return True
+        elif status == "rejected":
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def validate_data(incident):
+        for key, value in incident.items():
+            if key == 'created_by' and not value.isalnum():
+                return "Created by should be alphanumeric"
+            if key == 'type' and not Incident.check_if_type(value):
+                return "Type should be intervention or red flag"
+            if (key == 'latitude' or key == 'longitude') and not re.match(r"^\d+?\.\d+?$", value):
+                return "Latitude and longitude should be a float number"
+            if key == 'status' and not Incident.check_if_status(value):
+                return "Status should be either draft, under investigation, resolved or rejected"
+            if key == 'images'and not re.match(r"([a-zA-Z0-9\s_\\.\-\(\):])+(.jpg|.png|.jpeg|.gif)$", value):
+                return "Invalid image format"
+            if key == 'videos'and not re.match(r"([a-zA-Z0-9\s_\\.\-\(\):])+(.mp4|.mov|.mkv)$", value):
+                return "Invalid video format"
+            if key == 'comments' and not re.match(r"^[a-z\d\-_\s,.;:\"']+$", value):
+                return "Comments should be alphanumeric"

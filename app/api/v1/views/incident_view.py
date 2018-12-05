@@ -20,8 +20,8 @@ parser.add_argument('comments', help = 'This field cannot be blank', required = 
 incident_fields = api.model('Incident', {
     'created_by': fields.String,
     'type': fields.String,
-    'latitude': fields.String,
-    'longitude': fields.String,
+    'latitude': fields.Float,
+    'longitude': fields.Float,
     'status': fields.String,
     'images': fields.List(fields.String),
     'videos': fields.List(fields.String),
@@ -47,9 +47,15 @@ class IncidentEndpoint(Resource):
 
         new_incident = Incident(created_by, _type, latitude, longitude, status, images, videos, comments)
         created_incident = new_incident.create_incident()
+
+        if created_incident == "Field should not be empty":
+            return make_response(jsonify({
+                'status': 'Fail',
+                'data': created_incident
+            }), 400)
+
         return make_response(jsonify({
-            'status': 'ok',
-            'message': 'Success',
+            'status': 'Success',
             'data': created_incident
         }), 201)
 
@@ -60,13 +66,11 @@ class IncidentEndpoint(Resource):
         incidents = Incident.get_all_incidents(self)
         if len(incidents) == 0:
             return make_response(jsonify({
-                'message':  'success',
-                'status': 'ok',
-                'incidents': incidents
-            }), 200)
+                'status': 'Fail',
+                'data': incidents
+            }), 404)
         return make_response(jsonify({
-            'message':  'success',
-            'status': 'ok',
+            'status': 'Success',
             'data': incidents
         }), 200)
 
@@ -79,13 +83,11 @@ class AdminIncidentEndpoint(Resource):
         incidents = Incident.get_all_incidents(self)
         if len(incidents) == 0:
             return make_response(jsonify({
-                'message':  'success',
-                'status': 'ok',
-                'incidents': incidents
-            }), 200)
+                'status': 'Fail',
+                'data': incidents
+            }), 404)
         return make_response(jsonify({
-            'message':  'success',
-            'status': 'ok',
+            'status': 'Success',
             'data': incidents
         }), 200)
 
@@ -96,11 +98,15 @@ class SingleIncident(Resource):
     def get(self, incident_id):
         """Get a specific incident when provided with an id"""
         single_incident = Incident.get_incident(self, incident_id) 
-        return make_response(jsonify({
-                'status': 'ok',
-                'message': 'success',
+        if single_incident == "Incident not found":
+            return make_response(jsonify({
+                'status': 'Fail',
                 'data': single_incident
-            }), 200)
+            }), 404)
+        return make_response(jsonify({
+            'status': 'Success',
+            'data': single_incident
+        }), 200)
 
     @api.expect(incident_fields)
     @api.doc(security='apikey')
@@ -119,9 +125,21 @@ class SingleIncident(Resource):
 
         update_incident = Incident(created_by, _type, latitude, longitude, status, images, videos, comments)
         updated_incident = update_incident.edit_incident(incident_id)
+
+        if updated_incident == "Field should not be empty":
+            return make_response(jsonify({
+                'status': 'Fail',
+                'data': updated_incident
+            }), 400)
+
+        if updated_incident == "Incident not found":
+            return make_response(jsonify({
+                'status': 'Fail',
+                'data': updated_incident
+            }), 404)
+
         return make_response(jsonify({
-            'status': 'ok',
-            'message': 'Successful',
+            'status': 'Success',
             'data': updated_incident
         }), 201)
 
@@ -130,9 +148,15 @@ class SingleIncident(Resource):
     def delete(self, incident_id):
         """Delete a specific incident when provided with an id"""
         delete_incident = Incident.delete_incident(self, incident_id) 
+
+        if delete_incident == "Incident not found":
+            return make_response(jsonify({
+                'status': 'Fail',
+                'data': delete_incident
+            }), 404)
+
         return make_response(jsonify({
-            'status': 'ok',
-            'message': 'success',
+            'status': 'Success',
             'data': delete_incident
         }), 200)
 
@@ -155,8 +179,20 @@ class AdminSingleIncident(Resource):
 
         update_incident = Incident(created_by, _type, latitude, longitude, status, images, videos, comments)
         updated_incident = update_incident.edit_incident(incident_id)
+
+        if updated_incident == "Field should not be empty":
+            return make_response(jsonify({
+                'status': 'Fail',
+                'data': updated_incident
+            }), 400)
+
+        if updated_incident == "Incident not found":
+            return make_response(jsonify({
+                'status': 'Fail',
+                'data': updated_incident
+            }), 404)
+
         return make_response(jsonify({
-            'status': 'ok',
-            'message': 'Successful',
+            'status': 'Success',
             'data': updated_incident
         }), 201)

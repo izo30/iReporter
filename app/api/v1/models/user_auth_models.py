@@ -6,7 +6,6 @@ import jwt
 import re
 
 class User():
-    user_id = 1
     users = []
 
     def __init__(self, first_name, last_name, email, phone, username, password, role):
@@ -30,15 +29,21 @@ class User():
             role = self.role,
             registered_on = self.registered_on
         )
+
+        empty_field = User.check_if_empty(user)
+        if empty_field:
+            return empty_field
+
         User.users.append(user)
         return user
 
     def get_single_user(self, email):
         """Retrieve user details by email"""
+
         single_user = [user for user in User.users if user['email'] == email]
         if single_user:
             return single_user[0]
-        return 'not found'
+        return 'Not found'
 
     @staticmethod
     def generate_hash(password):
@@ -81,3 +86,9 @@ class User():
             return 'Signature expired. Please log in again.'
         except jwt.InvalidTokenError:
             return 'Invalid token. Please log in again.'
+
+    @staticmethod
+    def check_if_empty(incident):
+        for key, value in incident.items():
+            if value is None or value == "":
+                return "Field should not be empty"

@@ -31,7 +31,11 @@ class Incident():
             images = self.images,
             videos = self.videos,
             comments = self.comments
-        )    
+        )  
+        is_empty = Incident.check_if_empty(incident_item)  
+        if is_empty:
+            return is_empty
+
         self.incidents.append(incident_item)
         return incident_item
 
@@ -44,7 +48,7 @@ class Incident():
         incident_item = [incident for incident in Incident.incidents if incident['incident_id'] == incident_id]
         if incident_item:
             return incident_item[0]
-        return "incident not found"
+        return "Incident not found"
 
     def edit_incident(self, incident_id):
         """Method to edit an existing incident"""
@@ -60,6 +64,11 @@ class Incident():
             videos = self.videos,
             comments = self.comments
         ) 
+
+        is_empty = Incident.check_if_empty(edited_incident_item)  
+        if is_empty:
+            return is_empty
+
         """edit the incident"""
         for number, incident in enumerate(Incident.incidents):
             if incident['incident_id'] == incident_id:
@@ -68,7 +77,7 @@ class Incident():
                     return edited_incident_item
                 else:
                     return {'message':'incident status has changed'}
-        return 'incident not found'
+        return 'Incident not found'
 
     def delete_incident(self, incident_id):
         """delete the incident"""
@@ -76,7 +85,13 @@ class Incident():
             if incident['incident_id'] == incident_id:
                 if incident['status'] == 'draft':
                     del Incident.incidents[number]
-                    return 'deleted'
+                    return 'Deleted'
                 else: 
-                    return 'incident status has changed'
-        return 'incident not found'
+                    return 'Incident status has changed'
+        return 'Incident not found'
+
+    @staticmethod
+    def check_if_empty(incident):
+        for key, value in incident.items():
+            if value is None or value == "":
+                return "Field should not be empty"

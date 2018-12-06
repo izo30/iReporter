@@ -9,14 +9,14 @@ class Incident():
     incidents = []
     
     """ Initializing the constructor"""
-    def __init__(self, created_by, type, latitude, longitude, status, images, videos, comments):
+    def __init__(self, created_by, type, latitude, longitude, images, videos, comments):
         self.incident_id = len(Incident.incidents) + 1
         self.created_on = datetime.datetime.now()
         self.created_by = created_by
         self.type = type
         self.latitude = latitude
         self.longitude = longitude
-        self.status = status
+        self.status = "draft"
         self.images = images
         self.videos = videos
         self.comments = comments
@@ -76,6 +76,10 @@ class Incident():
         if is_empty:
             return is_empty
 
+        is_valid = Incident.validate_data(edited_incident_item)
+        if is_valid:
+            return is_valid
+
         """edit the incident"""
         for number, incident in enumerate(Incident.incidents):
             if incident['incident_id'] == incident_id:
@@ -84,6 +88,20 @@ class Incident():
                     return edited_incident_item
                 else:
                     return {'message':'incident status has changed'}
+        return 'Incident not found'
+
+    @staticmethod
+    def admin_edit_incident(incident_id, status):
+        if status.strip() is None or status.strip() == "":
+            return "Field should not be empty"
+        if not Incident.check_if_status(status.strip()):
+            return dict (error = "Status should be either draft, under investigation, \
+            resolved or rejected")
+        """edit the incident"""
+        for number, incident in enumerate(Incident.incidents):
+            if incident['incident_id'] == incident_id:
+                incident['status'] = status.strip()
+                return 'Incident status edited'
         return 'Incident not found'
 
     def delete_incident(self, incident_id):
@@ -127,18 +145,31 @@ class Incident():
 
     @staticmethod
     def validate_data(incident):
+
+        error_response = {}
+        error = False
+
         for key, value in incident.items():
             if key == 'created_by' and not value.isalnum():
-                return "Created by should be alphanumeric"
+                error = True
+                error_response[key] = "Created by should be alphanumeric"
             if key == 'type' and not Incident.check_if_type(value):
-                return "Type should be intervention or red flag"
+                error = True
+                error_response[key] = "Type should be intervention or red flag"
             if (key == 'latitude' or key == 'longitude') and not re.match(r"^\d+?\.\d+?$", value):
-                return "Latitude and longitude should be a float number"
-            if key == 'status' and not Incident.check_if_status(value):
-                return "Status should be either draft, under investigation, resolved or rejected"
+                error = True
+                error_response[key] = "Latitude and longitude should be a float number"
             if key == 'images'and not re.match(r"([a-zA-Z0-9\s_\\.\-\(\):])+(.jpg|.png|.jpeg|.gif)$", value):
-                return "Invalid image format"
+                error = True
+                error_response[key] = "Invalid image format"
             if key == 'videos'and not re.match(r"([a-zA-Z0-9\s_\\.\-\(\):])+(.mp4|.mov|.mkv)$", value):
-                return "Invalid video format"
+                error = True
+                error_response[key] = "Invalid video format"
             if key == 'comments' and not re.match(r"^[a-z\d\-_\s,.;:\"']+$", value):
-                return "Comments should be alphanumeric"
+                error = True
+                error_response[key] = "Comments should be alphanumeric"
+
+        if error:
+            print ("ERROR : {}" .format(error_response))
+            error_message = dict( error = error_response )
+            return error_message

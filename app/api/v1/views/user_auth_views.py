@@ -37,33 +37,32 @@ class Signup(Resource):
         username = args['username']
         password = args['password']
         role = args['role']
-
-        if not User.validate_password(password):
-            return make_response(jsonify({
-                'status': 'Fail',
-                'message': 'The password should contain a small and a capital letter, a number and a special character'
-            }), 400)
-
-        if not User.validate_email(email):
-            return make_response(jsonify({
-                'status': 'Fail',
-                'message': 'Invalid email'
-            }), 400)
         
         found_email = User.get_single_user(self, email)
         if found_email == 'Not found':
-            new_user = User(first_name, last_name, email, phone, username, User.generate_hash(password), role)
+            new_user = User(first_name, last_name, email, phone, username, password, role)
             created_user = new_user.create_user()
 
             if created_user == "Field should not be empty":
                 return make_response(jsonify({
-                    'status': 'Success',
+                    'status': 'Fail',
                     'message': created_user
                 }), 400)
 
+            try:
+                if created_user['error']:
+                    return make_response(jsonify({
+                        'status': 'Fail',
+                        'error': created_user['error']
+                    }), 400)
+            except Exception:
+                pass
+
+            token = User.encode_auth_token(email, role)   
             return make_response(jsonify({
-                'status': 'Success',
-                'data': created_user
+                'status' : 'Success',
+                'message' : 'Signed up successfully',
+                'auth_token': token.decode('UTF-8')
             }), 201)
 
         return make_response(jsonify({

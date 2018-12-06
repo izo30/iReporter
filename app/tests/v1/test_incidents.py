@@ -13,7 +13,6 @@ class TestIncidents(BaseTest):
         "type":"red flag",
         "latitude": 25.252,
         "longitude": 2.456,
-        "status": "draft",
         "images": [
             "image1.jpg"
         ],
@@ -28,7 +27,6 @@ class TestIncidents(BaseTest):
         "type":"intervention",
         "latitude": 25.252,
         "longitude": 2.456,
-        "status": "under investigation",
         "images": [
             "image1.png","image2"
         ],
@@ -38,12 +36,15 @@ class TestIncidents(BaseTest):
         "comments": "kahawa west road needs maintenance"
     }
 
+    admin_edited_status = {
+        "status": "under investigation"
+    }
+
     another_incident = {
         "created_by": "746",
         "type":"red flag",
         "latitude": 25.252,
         "longitude": 2.456,
-        "status": "resolved",
         "images": [
             "image1.jpg","image2"
         ],
@@ -164,7 +165,7 @@ class TestIncidents(BaseTest):
         auth_token = self.generate_auth_token()
         result = self.create_incident(TestIncidents.incidents_data)
 
-        new_incident = self.client().put('/api/v1/incidents/admin/{}'.format(result['data']['incident_id']), headers=dict(Authorization="{}".format(auth_token)), data = TestIncidents.edited_incident)
+        new_incident = self.client().put('/api/v1/incidents/admin/{}'.format(result['data']['incident_id']), headers=dict(Authorization="{}".format(auth_token)), data = TestIncidents.admin_edited_status)
         edited_result = json.loads(new_incident.data)
         self.assertEqual(new_incident.status_code, 201)
         self.assertEqual("Success", edited_result['status'])
@@ -172,7 +173,7 @@ class TestIncidents(BaseTest):
     def test_admin_edit_incident_not_exist(self):
         auth_token = self.generate_auth_token()
 
-        new_incident = self.client().put('/api/v1/incidents/admin/123', headers=dict(Authorization="{}".format(auth_token)), data = TestIncidents.edited_incident)
+        new_incident = self.client().put('/api/v1/incidents/admin/123', headers=dict(Authorization="{}".format(auth_token)), data = TestIncidents.admin_edited_status)
         edited_result = json.loads(new_incident.data)
         self.assertEqual(new_incident.status_code, 404)
         self.assertEqual("Fail", edited_result['status'])

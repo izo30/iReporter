@@ -14,7 +14,7 @@ class User():
         self.email = email
         self.phone = phone
         self.username = username
-        self.password =password
+        self.password = password
         self.role = role
         self.registered_on = datetime.now()
 
@@ -38,8 +38,21 @@ class User():
         if data_type:
             return data_type
 
+        user['password'] = User.generate_hash(user['password'])
+
+        print ("User : {}" .format(user))
+
         User.users.append(user)
-        return user
+
+        response_user = dict(
+            first_name = self.first_name,
+            last_name = self.last_name,
+            username = self.username,
+            role = self.role,
+            registered_on = self.registered_on
+        )
+
+        return response_user
 
     def get_single_user(self, email):
         """Retrieve user details by email"""
@@ -111,20 +124,36 @@ class User():
 
     @staticmethod
     def validate_data(user):
+
+        error_response = {}
+        error = False
+
         for key, value in user.items():
             if key == 'first_name' and not re.match(r"(^[a-zA-Z]+$)", value):
-                return "First name should contain letters only"
+                error = True
+                error_response[key] = "First name should contain letters only"
             elif key == 'last_name' and not re.match(r"(^[a-zA-Z]+$)", value):
-                return "Last name should contain letters only"
+                error = True
+                error_response[key] = "Last name should contain letters only"
             elif key == 'email' and not User.validate_email(value):
-                return "Invalid email"
+                error = True
+                error_response[key] = "Invalid email"
             elif key == 'phone' and not re.match(r"^([\s\d]+)$", value):
-                return "Invalid phone number"
+                error = True
+                error_response[key] = "Invalid phone number"
             elif key == 'username' and not re.match(r"[a-z A-Z0-9\_\"]+$", value):
-                return "Username should contain only numbers, letters and underscore"
+                error = True
+                error_response[key] = "Username should contain only numbers, letters and underscore"
             elif key == 'password' and not User.validate_password(value):
-                return "The password should contain a small and a capital letter, a number and a special character"
+                error = True
+                error_response[key] = "The password should contain a small and a capital letter, a number and a special character"
             elif key == 'role' and not User.check_if_role(value):
-                return "Role should be admin or user"
+                error = True
+                error_response[key] = "Role should be admin or user"
+
+        if error:
+            print ("ERROR : {}" .format(error_response))
+            error_message = dict( error = error_response )
+            return error_message
 
 

@@ -21,7 +21,7 @@ class TestUser(BaseTest):
         )), content_type = 'application/json')
 
         result = json.loads(response.data)
-        self.assertEqual('brian@gmail.com', result['data']['email'])
+        self.assertEqual('Success', result['status'])
         self.assertEqual(response.status_code, 201)
         self.assertEqual('Success', result['status'])
         self.assertTrue(response.content_type == 'application/json')
@@ -126,7 +126,7 @@ class TestUser(BaseTest):
         response = self.client().post(reg_url, data=json.dumps(dict(
             first_name = 'brian',
             last_name = 'wainaina',
-            email = 'brian@gmail.com',
+            email = 'brin@gmail.com',
             phone = '0736547657', 
             username = 'brian',
             password = '123456',
@@ -134,7 +134,7 @@ class TestUser(BaseTest):
         )), content_type = 'application/json')
 
         result = json.loads(response.data)
-        self.assertEqual('The password should contain a small and a capital letter, a number and a special character', result['message'])
+        self.assertEqual('The password should contain a small and a capital letter, a number and a special character', result['error']['password'])
         self.assertEqual(response.status_code, 400)
         self.assertEqual('Fail', result['status'])
         self.assertTrue(response.content_type == 'application/json')
@@ -151,7 +151,7 @@ class TestUser(BaseTest):
         )), content_type = 'application/json')
 
         result = json.loads(response.data)
-        self.assertEqual('Invalid email', result['message'])
+        self.assertEqual('Invalid email', result['error']['email'])
         self.assertEqual(response.status_code, 400)
         self.assertEqual('Fail', result['status'])
         self.assertTrue(response.content_type == 'application/json')

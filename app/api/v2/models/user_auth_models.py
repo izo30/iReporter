@@ -9,16 +9,7 @@ import psycopg2
 class User():
     users = []
 
-    def __init__(self, first_name, last_name, email, phone, username, password, role):
-        self.first_name = first_name
-        self.last_name = last_name
-        self.email = email
-        self.phone = phone
-        self.username = username
-        self.password = password
-        self.role = role
-        self.registered_on = datetime.now()
-
+    def __init__(self):
         try:
             self.connection = psycopg2.connect(
                 "dbname='ireporter' user='postgres' host='localhost' password='F31+35e9' port='5432'")
@@ -28,29 +19,28 @@ class User():
         except:
             print("Cannot connect to database")
 
-    def create_user(self):
+    def create_user(self, first_name, last_name, email, phone, username, password, role):
         user = dict(
-            first_name = self.first_name,
-            last_name = self.last_name,
-            email = self.email,
-            phone = self.phone, 
-            username = self.username,
-            password = self.password,
-            role = self.role,
-            registered_on = self.registered_on
+            first_name = first_name,
+            last_name = last_name,
+            email = email,
+            phone = phone, 
+            username = username,
+            password = password,
+            role = role
         )
 
         empty_field = User.check_if_empty(user)
         if empty_field:
             return empty_field
 
-        data_type = self.validate_data()
+        data_type = self.validate_data(first_name, last_name, email, phone, username, password, role)
         if data_type:
             return data_type
 
-        hashed_password = User.generate_hash(self.password)
+        hashed_password = User.generate_hash(password)
 
-        query = "SELECT * FROM users WHERE email='{}'" .format(self.email)
+        query = "SELECT * FROM users WHERE email='{}'" .format(email)
         self.cursor.execute(query)
         user = self.cursor.fetchone()
 
@@ -58,19 +48,41 @@ class User():
             create_user_query = "INSERT INTO users(first_name, last_name, email, phone, username, password, role,\
              registered_on)\
                     VALUES(%s,%s,%s,%s,%s,%s,%s,%s)"
-            self.cursor.execute(create_user_query, (self.first_name, self.last_name, self.email, self.phone,\
-            self.username, hashed_password, self.role, datetime.now()))
+            self.cursor.execute(create_user_query, (first_name, last_name, email, phone, username, hashed_password, role, datetime.now()))
 
             response_user = dict(
-                first_name = self.first_name,
-                last_name = self.last_name,
-                username = self.username,
-                role = self.role,
-                registered_on = self.registered_on
+                first_name = first_name,
+                last_name = last_name,
+                username = username,
+                role = role
             )
             return response_user
         else:
-            return response_user
+            return dict(error = "User already exists, signup with another email")
+
+    def get_single_user(self, email):
+        query = "SELECT * FROM users WHERE email='{}'" .format(email)
+        self.cursor.execute(query)
+        user = self.cursor.fetchone()
+
+        if user:
+            return dict(
+                role = user[7],
+                password = user[6]
+            )
+
+        else:
+            return "User not found"
+
+    def get_cursor(self):
+        try:
+            connection = psycopg2.connect(
+                "dbname='ireporter' user='postgres' host='localhost' password='F31+35e9' port='5432'")
+            connection.autocommit = True
+            cursor = connection.cursor()
+            return cursor
+        except:
+            return "Cannot connect to database"
 
     @staticmethod
     def generate_hash(password):
@@ -129,30 +141,30 @@ class User():
         else:
             return False
 
-    def validate_data(self):
+    def validate_data(self, first_name, last_name, email, phone, username, password, role):
 
         error_response = {}
         error = False
 
-        if not re.match(r"(^[a-zA-Z]+$)", self.first_name):
+        if not re.match(r"(^[a-zA-Z]+$)", first_name):
             error = True
             error_response['first_name'] = "First name should contain letters only"
-        elif not re.match(r"(^[a-zA-Z]+$)", self.last_name):
+        elif not re.match(r"(^[a-zA-Z]+$)", last_name):
             error = True
             error_response['last_name'] = "Last name should contain letters only"
-        elif not User.validate_email(self.email):
+        elif not User.validate_email(email):
             error = True
             error_response['email'] = "Invalid email"
-        elif not re.match(r"^([\s\d]+)$", self.phone):
+        elif not re.match(r"^([\s\d]+)$", phone):
             error = True
             error_response['phone'] = "Invalid phone number"
-        elif not re.match(r"[a-z A-Z0-9\_\"]+$", self.username):
+        elif not re.match(r"[a-z A-Z0-9\_\"]+$", username):
             error = True
             error_response['username'] = "Username should contain only numbers, letters and underscore"
-        elif not User.validate_password(self.password):
+        elif not User.validate_password(password):
             error = True
             error_response['password'] = "The password should contain a small and a capital letter, a number and a special character"
-        elif not User.check_if_role(self.role):
+        elif not User.check_if_role(role):
             error = True
             error_response['role'] = "Role should be admin or user"
 

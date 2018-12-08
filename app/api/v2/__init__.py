@@ -13,8 +13,8 @@ authorizations = {
     }
 }
 
-version1 = Blueprint('api version 1', __name__, url_prefix='/api/v1')
-api = Api(version1, title='iReporter API', version='1.0', description='An application\
+version2 = Blueprint('api version 2', __name__, url_prefix='/api/v2')
+api = Api(version2, title='iReporter API', version='2.0', description='An application\
     that helps users report corruption incidents and ask for government interventions',\
     authorizations=authorizations)
 

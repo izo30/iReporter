@@ -4,6 +4,7 @@ from app.instance.config import secret_key
 from datetime import datetime, timedelta
 import jwt
 import re
+import psycopg2
 
 class User():
     users = []
@@ -17,6 +18,15 @@ class User():
         self.password = password
         self.role = role
         self.registered_on = datetime.now()
+
+        try:
+            self.connection = psycopg2.connect(
+                "dbname='ireporter' user='postgres' host='localhost' password='F31+35e9' port='5432'")
+            self.connection.autocommit = True
+            self.cursor = self.connection.cursor()
+
+        except:
+            print("Cannot connect to database")
 
     def create_user(self):
         user = dict(
@@ -34,36 +44,33 @@ class User():
         if empty_field:
             return empty_field
 
-        data_type = User.validate_data(user)
+        data_type = self.validate_data()
         if data_type:
             return data_type
 
-        user['password'] = User.generate_hash(user['password'])
+        hashed_password = User.generate_hash(self.password)
 
-        print ("User : {}" .format(user))
+        query = "SELECT * FROM users WHERE email='{}'" .format(self.email)
+        self.cursor.execute(query)
+        user = self.cursor.fetchone()
 
-        User.users.append(user)
+        if not user:
+            create_user_query = "INSERT INTO users(first_name, last_name, email, phone, username, password, role,\
+             registered_on)\
+                    VALUES(%s,%s,%s,%s,%s,%s,%s,%s)"
+            self.cursor.execute(create_user_query, (self.first_name, self.last_name, self.email, self.phone,\
+            self.username, hashed_password, self.role, datetime.now()))
 
-        response_user = dict(
-            first_name = self.first_name,
-            last_name = self.last_name,
-            username = self.username,
-            role = self.role,
-            registered_on = self.registered_on
-        )
-
-        return response_user
-
-    def get_single_user(self, email):
-        """Retrieve user details by email"""
-
-        if email is None or email == "":
-            return "Email should not be empty"
-
-        single_user = [user for user in User.users if user['email'] == email]
-        if single_user:
-            return single_user[0]
-        return 'Not found'
+            response_user = dict(
+                first_name = self.first_name,
+                last_name = self.last_name,
+                username = self.username,
+                role = self.role,
+                registered_on = self.registered_on
+            )
+            return response_user
+        else:
+            return response_user
 
     @staticmethod
     def generate_hash(password):
@@ -122,34 +129,32 @@ class User():
         else:
             return False
 
-    @staticmethod
-    def validate_data(user):
+    def validate_data(self):
 
         error_response = {}
         error = False
 
-        for key, value in user.items():
-            if key == 'first_name' and not re.match(r"(^[a-zA-Z]+$)", value):
-                error = True
-                error_response[key] = "First name should contain letters only"
-            elif key == 'last_name' and not re.match(r"(^[a-zA-Z]+$)", value):
-                error = True
-                error_response[key] = "Last name should contain letters only"
-            elif key == 'email' and not User.validate_email(value):
-                error = True
-                error_response[key] = "Invalid email"
-            elif key == 'phone' and not re.match(r"^([\s\d]+)$", value):
-                error = True
-                error_response[key] = "Invalid phone number"
-            elif key == 'username' and not re.match(r"[a-z A-Z0-9\_\"]+$", value):
-                error = True
-                error_response[key] = "Username should contain only numbers, letters and underscore"
-            elif key == 'password' and not User.validate_password(value):
-                error = True
-                error_response[key] = "The password should contain a small and a capital letter, a number and a special character"
-            elif key == 'role' and not User.check_if_role(value):
-                error = True
-                error_response[key] = "Role should be admin or user"
+        if not re.match(r"(^[a-zA-Z]+$)", self.first_name):
+            error = True
+            error_response['first_name'] = "First name should contain letters only"
+        elif not re.match(r"(^[a-zA-Z]+$)", self.last_name):
+            error = True
+            error_response['last_name'] = "Last name should contain letters only"
+        elif not User.validate_email(self.email):
+            error = True
+            error_response['email'] = "Invalid email"
+        elif not re.match(r"^([\s\d]+)$", self.phone):
+            error = True
+            error_response['phone'] = "Invalid phone number"
+        elif not re.match(r"[a-z A-Z0-9\_\"]+$", self.username):
+            error = True
+            error_response['username'] = "Username should contain only numbers, letters and underscore"
+        elif not User.validate_password(self.password):
+            error = True
+            error_response['password'] = "The password should contain a small and a capital letter, a number and a special character"
+        elif not User.check_if_role(self.role):
+            error = True
+            error_response['role'] = "Role should be admin or user"
 
         if error:
             print ("ERROR : {}" .format(error_response))

@@ -1,5 +1,6 @@
 from flask import Flask
 from .instance.config import app_config
+from .instance.db_config import DbSetup
 
 def create_app(config):
     '''configuring the flask app'''
@@ -11,5 +12,10 @@ def create_app(config):
     app.config.from_object(app_config[config])
     app.url_map.strict_slashes = False
     app.config['testing'] = True
+
+    #  setup database
+    DbSetup().create_users_table()
+    DbSetup().create_incidents_table()
+    DbSetup().create_default_admin()
 
     return app

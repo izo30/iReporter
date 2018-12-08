@@ -29,7 +29,7 @@ A system for reporting any form of corruption to the appropriate authorities and
 ## Installation
 Clone the repo
 ```
-https://github.com/izo30/iReporter.git
+git clone https://github.com/izo30/iReporter.git
 ```
 Create a virtual environment
 ```

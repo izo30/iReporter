@@ -1,7 +1,7 @@
 import jwt
 from app.instance.config import secret_key
 from functools import wraps
-from app.api.v1.models.user_auth_models import User
+from ..models.user_auth_models import User
 from flask import request, jsonify, make_response
 
 def admin_required(f):

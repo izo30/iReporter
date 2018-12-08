@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 import jwt
 import re
 import psycopg2
+import uuid
 
 class User():
     users = []
@@ -45,12 +46,15 @@ class User():
         user = self.cursor.fetchone()
 
         if not user:
-            create_user_query = "INSERT INTO users(first_name, last_name, email, phone, username, password, role,\
+            _id = uuid.uuid4()
+            _id = str(_id)
+            create_user_query = "INSERT INTO users(id, first_name, last_name, email, phone, username, password, role,\
              registered_on)\
-                    VALUES(%s,%s,%s,%s,%s,%s,%s,%s)"
-            self.cursor.execute(create_user_query, (first_name, last_name, email, phone, username, hashed_password, role, datetime.now()))
+                    VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+            self.cursor.execute(create_user_query, (_id, first_name, last_name, email, phone, username, hashed_password, role, datetime.now()))
 
             response_user = dict(
+                id = _id,
                 first_name = first_name,
                 last_name = last_name,
                 username = username,
@@ -67,6 +71,7 @@ class User():
 
         if user:
             return dict(
+                id = user[0],
                 role = user[7],
                 password = user[6]
             )
@@ -105,10 +110,10 @@ class User():
         return False
 
     @staticmethod
-    def encode_auth_token(email, role):
+    def encode_auth_token(id, email, role):
         """ Generates an Auth token"""
         try:
-            token = jwt.encode({'user' : email, 'role' : role, 'exp' : datetime.utcnow() + timedelta(minutes=1440)}, secret_key)
+            token = jwt.encode({'id' : id, 'user' : email, 'role' : role, 'exp' : datetime.utcnow() + timedelta(minutes=1440)}, secret_key)
     
             return token
 

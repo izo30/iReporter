@@ -9,7 +9,6 @@ api = Namespace('Incident Endpoints', description='A collection of endpoints for
 
 def required_incident_fields():
     parser = reqparse.RequestParser()
-    parser.add_argument('created_by', help = 'This field cannot be blank', required = True)
     parser.add_argument('type', help = 'This field cannot be blank', required = True)
     parser.add_argument('latitude', help = 'This field cannot be blank', required = True)
     parser.add_argument('longitude', help = 'This field cannot be blank', required = True)
@@ -74,4 +73,20 @@ class IncidentEndpoint(Resource):
             'status': 'Success',
             'data': created_incident
         }), 201)
+
+    @api.doc(security='apikey')
+    @token_required
+    def get(self):
+        """Get all incidents"""
+        incident = Incident()
+        incidents = incident.get_all_incidents()
+        if len(incidents) == 0:
+            return make_response(jsonify({
+                'status': 'Fail',
+                'data': incidents
+            }), 404)
+        return make_response(jsonify({
+            'status': 'Success',
+            'data': incidents
+        }), 200)
 

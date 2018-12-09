@@ -56,6 +56,32 @@ class Incident():
         )
         return response_user
 
+    """method to fetch for all incident records"""
+    def get_all_incidents (self):
+        _id = Incident.get_user_id()
+        retrieve_all_incidents_query = "SELECT * FROM incidents WHERE created_by='{}'".format(_id)
+        self.cursor.execute(retrieve_all_incidents_query)
+        incidents = []
+        rows = self.cursor.fetchall()
+        if rows:
+            for row in rows:
+                incident = dict(
+                    id = row[0],
+                    created_on = row[1],
+                    created_by = row[2],
+                    type = row[3],
+                    latitude = row[4],
+                    longitude = row[5],
+                    status = row[6],
+                    images = row[7],
+                    videos = row[8],
+                    comment = row[9]
+                )
+                incidents.append(incident)
+            return incidents
+        else:
+            return []
+
     @staticmethod
     def check_if_empty(incident):
         for key, value in incident.items():

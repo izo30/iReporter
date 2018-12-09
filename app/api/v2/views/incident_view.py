@@ -148,3 +148,21 @@ class SingleIncident(Resource):
             'status': 'Success',
             'data': updated_incident
         }), 201)
+
+    @api.doc(security='apikey')
+    @token_required
+    def delete(self, incident_id):
+        """Delete a specific incident when provided with an id"""
+        incident = Incident()
+        delete_incident = incident.delete_incident(incident_id) 
+
+        if delete_incident == "Incident not found":
+            return make_response(jsonify({
+                'status': 'Fail',
+                'message': delete_incident
+            }), 404)
+
+        return make_response(jsonify({
+            'status': 'Success',
+            'message': delete_incident
+        }), 200)

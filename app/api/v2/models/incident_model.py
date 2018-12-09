@@ -136,6 +136,18 @@ class Incident():
             return response
         return 'Incident not found'
 
+    def delete_incident(self, incident_id):
+        """delete the incident"""
+        _id = Incident.get_user_id()
+        check_incident_exists_query = "SELECT * FROM incidents WHERE id='{}' AND created_by='{}'".format(incident_id, _id)
+        self.cursor.execute(check_incident_exists_query)
+        row = self.cursor.fetchone()
+        if row:
+            delete_incident_query = "DELETE FROM incidents WHERE id='{}'".format(incident_id)
+            self.cursor.execute(delete_incident_query)
+            return "Deleted"
+        return 'Incident not found'
+
     @staticmethod
     def check_if_empty(incident):
         for key, value in incident.items():

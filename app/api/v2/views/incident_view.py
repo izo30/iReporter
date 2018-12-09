@@ -166,3 +166,40 @@ class SingleIncident(Resource):
             'status': 'Success',
             'message': delete_incident
         }), 200)
+
+@api.route('/admin/<string:incident_id>')
+class AdminSingleIncident(Resource):
+    @api.expect(status_field)
+    @api.doc(security='apikey')
+    @admin_required
+    def put(self, incident_id):
+        """Edit incident status"""
+        parser = admin_status_field()
+        args = parser.parse_args()
+        status = args['status']
+
+        incident = Incident()
+        update_incident = incident.admin_edit_incident_status(incident_id, status)
+        
+        if update_incident == "Status should not be empty":
+            return make_response(jsonify({
+                'status': 'Fail',
+                'data': update_incident
+            }), 400)
+        
+        if update_incident == "Invalid status":
+            return make_response(jsonify({
+                'status': 'Fail',
+                'data': update_incident
+            }), 400)
+
+        if update_incident == "Incident not found":
+            return make_response(jsonify({
+                'status': 'Fail',
+                'data': update_incident
+            }), 404)
+
+        return make_response(jsonify({
+            'status': 'Success',
+            'data': update_incident
+        }), 201)

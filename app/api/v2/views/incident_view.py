@@ -90,3 +90,20 @@ class IncidentEndpoint(Resource):
             'data': incidents
         }), 200)
 
+@api.route('/<string:incident_id>')
+class SingleIncident(Resource):
+    @api.doc(security='apikey')
+    @token_required
+    def get(self, incident_id):
+        """Get a specific incident when provided with an id"""
+        incident = Incident()
+        single_incident = incident.get_single_incident(incident_id) 
+        if single_incident == "Incident not found":
+            return make_response(jsonify({
+                'status': 'Fail',
+                'data': single_incident
+            }), 404)
+        return make_response(jsonify({
+            'status': 'Success',
+            'data': single_incident
+        }), 200)

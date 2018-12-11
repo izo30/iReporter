@@ -56,7 +56,8 @@ class Signup(Resource):
         except Exception:
             pass
 
-        token = User.encode_auth_token(email, role)   
+        print("ID : {}" .format(created_user['id']))
+        token = User.encode_auth_token(created_user['id'], email, role)   
         return make_response(jsonify({
             'status' : 'Success',
             'message' : 'Signed up successfully',
@@ -108,7 +109,8 @@ class Login(Resource):
                 }), 400)
             if current_user and User.verify_hash(password, current_user['password']):
                 role = current_user['role']
-                token = User.encode_auth_token(email, role)   
+                id = current_user['id']
+                token = User.encode_auth_token(id, email, role)   
                 return make_response(jsonify({
                     'status' : 'Success',
                     'message' : 'Logged in successfully',

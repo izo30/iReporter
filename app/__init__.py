@@ -21,4 +21,6 @@ def create_app(config):
     DbSetup().create_incidents_table()
     DbSetup().create_default_admin()
 
+    # DbSetup().drop_tables()
+
     return app

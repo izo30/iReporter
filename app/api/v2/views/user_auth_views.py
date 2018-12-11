@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, Blueprint, json, make_response
 from flask_restplus import Resource, reqparse, Api, Namespace, fields
-from app.api.v1.models.user_auth_models import User
+from ..models.user_auth_models import User
 
 api = Namespace('User Endpoints', description='A collection of user endpoints')
 
@@ -38,37 +38,30 @@ class Signup(Resource):
         password = args['password']
         role = args['role']
         
-        found_email = User.get_single_user(self, email)
-        if found_email == 'Not found':
-            new_user = User(first_name, last_name, email, phone, username, password, role)
-            created_user = new_user.create_user()
+        new_user = User()
+        created_user = new_user.create_user(first_name, last_name, email, phone, username, password, role)
 
-            if created_user == "Field should not be empty":
+        if created_user == "Field should not be empty":
+            return make_response(jsonify({
+                'status': 'Fail',
+                'message': created_user
+            }), 400)
+
+        try:
+            if created_user['error']:
                 return make_response(jsonify({
                     'status': 'Fail',
-                    'message': created_user
+                    'error': created_user['error']
                 }), 400)
+        except Exception:
+            pass
 
-            try:
-                if created_user['error']:
-                    return make_response(jsonify({
-                        'status': 'Fail',
-                        'error': created_user['error']
-                    }), 400)
-            except Exception:
-                pass
-
-            token = User.encode_auth_token(email, role)   
-            return make_response(jsonify({
-                'status' : 'Success',
-                'message' : 'Signed up successfully',
-                'auth_token': token.decode('UTF-8')
-            }), 201)
-
+        token = User.encode_auth_token(email, role)   
         return make_response(jsonify({
-            'status': 'Fail',
-            'message' : 'Email already exists, please log in'
-        }), 303)
+            'status' : 'Success',
+            'message' : 'Signed up successfully',
+            'auth_token': token.decode('UTF-8')
+        }), 201)
 
 login_fields = api.model('Login', {
     'email': fields.String,
@@ -106,8 +99,9 @@ class Login(Resource):
             }), 400)
                 
         try:
-            current_user = User.get_single_user(self, email)
-            if current_user == 'not found':
+            user = User()
+            current_user = user.get_single_user(email)
+            if current_user == 'User not found':
                 return make_response(jsonify({
                     'status': 'Fail',
                     'message': 'User does not exist, sign up!'

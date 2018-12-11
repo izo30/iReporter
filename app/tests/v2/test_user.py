@@ -28,7 +28,7 @@ class TestUser(BaseTest):
 
     def test_get_single_user(self):
         response = self.client().post(login_url, data=json.dumps(dict(
-            email = 'brian@gmail.com',
+            email = 'isaacwangethi30@gmail.com',
             password = 'F31+25e9'
         )), content_type = 'application/json')
         result = json.loads(response.data)
@@ -82,7 +82,7 @@ class TestUser(BaseTest):
         auth_token = user.encode_auth_token(user_id, email, role)
         self.assertTrue(isinstance(auth_token, bytes))
         print ("AUTH TOKEN : {}" .format(auth_token))
-        self.assertTrue(user.decode_auth_token(auth_token)['id'] == 'user_id')
+        self.assertEqual(user.decode_auth_token(auth_token)['id'], user_id)
 
     def test_user_password_validation(self):
         response = self.client().post(signup_url, data=json.dumps(dict(

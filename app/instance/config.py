@@ -10,15 +10,17 @@ class Config():
 class Development(Config):
     '''Configurations for development'''
     Debug = True
+    os.environ['DB'] = 'ireporter'
 
 class Testing(Config):
     '''Congigurations for testing'''
     TESTING = True
     Debug = True
+    os.environ['DB'] = 'ireportertest'
 
 app_config = {
-    'development' : Development,
-    'testing' : Testing
+    'development' : Development(),
+    'testing' : Testing()
 }
 
 secret_key = Config.SECRET_KEY

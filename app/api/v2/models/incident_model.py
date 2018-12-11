@@ -4,6 +4,7 @@ from ..models.user_auth_models import User
 import re
 import psycopg2
 import uuid
+import os
 
 """Incident model class"""
 class Incident():
@@ -14,7 +15,7 @@ class Incident():
     def __init__(self):
         try:
             self.connection = psycopg2.connect(
-                "dbname='ireporter' user='postgres' host='localhost' password='F31+35e9' port='5432'")
+                "dbname='{}' user='postgres' host='localhost' password='F31+35e9' port='5432'".format(os.environ['DB']))
             self.connection.autocommit = True
             self.cursor = self.connection.cursor()
 

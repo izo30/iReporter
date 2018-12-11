@@ -2,7 +2,7 @@
 from flask import Flask, request, jsonify, Blueprint, json, make_response
 from flask_restplus import Resource, reqparse, Api, Namespace, fields
 from ..models.incident_model import Incident
-from app.api.v1.utils.auth import admin_required, token_required
+from ..utils.auth import admin_required, token_required
 import json
 
 api = Namespace('Incident Endpoints', description='A collection of endpoints for the incident model; includes get, post, put and delete endpoints', path='api/v1/incidents')

@@ -1,16 +1,16 @@
 # Library imports
 import json
 # Local application imports
-from app.tests.v1.base_test import BaseTest
-from app.api.v1.models.user_auth_models import User
+from app.tests.v2.base_test import BaseTest
+from app.api.v2.models.user_auth_models import User
 
-reg_url = 'api/v1/auth/signup'
-login_url = 'api/v1/auth/login'
+signup_url = 'api/v2/auth/signup'
+login_url = 'api/v2/auth/login'
 
 class TestUser(BaseTest):
 
     def test_create_user(self):
-        response = self.client().post(reg_url, data=json.dumps(dict(
+        response = self.client().post(signup_url, data=json.dumps(dict(
             first_name = 'brian',
             last_name = 'wainaina',
             email = 'brian@gmail.com',
@@ -28,7 +28,7 @@ class TestUser(BaseTest):
 
     def test_get_single_user(self):
         response = self.client().post(login_url, data=json.dumps(dict(
-            email = 'isaac@gmail.com',
+            email = 'brian@gmail.com',
             password = 'F31+25e9'
         )), content_type = 'application/json')
         result = json.loads(response.data)
@@ -38,20 +38,10 @@ class TestUser(BaseTest):
         self.assertTrue(response.content_type == 'application/json')
 
     def test_create_user_already_exist(self):
-        response = self.client().post(reg_url, data=json.dumps(dict(
+        response = self.client().post(signup_url, data=json.dumps(dict(
             first_name = 'isaac',
             last_name = 'wangethi',
-            email = 'brit@gmail.com',
-            phone = '0736547657', 
-            username = 'isaac',
-            password = 'F31+25e9',
-            role = 'user'
-        )), content_type = 'application/json')
-
-        response = self.client().post(reg_url, data=json.dumps(dict(
-            first_name = 'isaac',
-            last_name = 'wangethi',
-            email = 'brit@gmail.com',
+            email = 'isaacwangethi30@gmail.com',
             phone = '0736547657', 
             username = 'isaac',
             password = 'F31+25e9',
@@ -59,31 +49,14 @@ class TestUser(BaseTest):
         )), content_type = 'application/json')
         result = json.loads(response.data)
         self.assertEqual('Fail', result['status'])
-        self.assertEqual('Email already exists, please log in', result['message'])
+        self.assertEqual('User already exists, signup with another email', result['error'])
         self.assertTrue(response.content_type == 'application/json')
-        self.assertEqual(response.status_code, 303)
+        self.assertEqual(response.status_code, 400)
     
     def test_user_login(self):
-        """test for registered user login"""
-        #User registration
-        response = self.client().post(reg_url, data=json.dumps(dict(
-            first_name = 'isaac',
-            last_name = 'wangethi',
-            email = 'bri@gmail.com',
-            phone = '0736547657', 
-            username = 'isaac',
-            password = 'F31+25e9',
-            role = 'user'
-        )), content_type = 'application/json')
-
-        register_result = json.loads(response.data)
-        self.assertEqual('Success', register_result['status'])
-        self.assertEqual(response.status_code, 201)
-        self.assertTrue(response.content_type == 'application/json')
-
         #Registered user login
         response = self.client().post(login_url, data=json.dumps(dict(
-            email = 'brian@gmail.com',
+            email = 'isaacwangethi30@gmail.com',
             password = 'F31+25e9',
         )),content_type = 'application/json')
 
@@ -94,36 +67,25 @@ class TestUser(BaseTest):
         self.assertTrue(response.content_type == 'application/json')
             
     def test_encode_auth_token(self):
-        user = User(
-            first_name = 'isaac',
-            last_name = 'wangethi',
-            email = 'isaac@gmail.com',
-            phone = '0736547657', 
-            username = 'isaac',
-            password = 'F31+25e9',
-            role = 'user'
-        )
-
-        auth_token = user.encode_auth_token(user.email, user.role)
+        user_id = 'aa520a77-a9a2-461c-9efa-169bb698391c'
+        email = 'brian@gmail.com'
+        role = 'user'
+        user = User()
+        auth_token = user.encode_auth_token(user_id, email, role)
         self.assertTrue(isinstance(auth_token, bytes))
 
     def test_decode_auth_token(self):
-        user = User(
-            first_name = 'isaac',
-            last_name = 'wangethi',
-            email = 'isaac@gmail.com',
-            phone = '0736547657', 
-            username = 'isaac',
-            password = 'F31+25e9',
-            role = 'user'
-        )
-
-        auth_token = user.encode_auth_token(user.email, user.role)
+        user_id = 'aa520a77-a9a2-461c-9efa-169bb698391c'
+        email = 'brian@gmail.com'
+        role = 'user'
+        user = User()
+        auth_token = user.encode_auth_token(user_id, email, role)
         self.assertTrue(isinstance(auth_token, bytes))
-        self.assertTrue(User.decode_auth_token(auth_token)['role'] == 'user')
+        print ("AUTH TOKEN : {}" .format(auth_token))
+        self.assertTrue(user.decode_auth_token(auth_token)['id'] == 'user_id')
 
     def test_user_password_validation(self):
-        response = self.client().post(reg_url, data=json.dumps(dict(
+        response = self.client().post(signup_url, data=json.dumps(dict(
             first_name = 'brian',
             last_name = 'wainaina',
             email = 'brin@gmail.com',
@@ -140,7 +102,7 @@ class TestUser(BaseTest):
         self.assertTrue(response.content_type == 'application/json')
 
     def test_user_email_validation(self):
-        response = self.client().post(reg_url, data=json.dumps(dict(
+        response = self.client().post(signup_url, data=json.dumps(dict(
             first_name = 'brian',
             last_name = 'wainaina',
             email = 'briangmail.com',

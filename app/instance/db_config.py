@@ -2,13 +2,14 @@ import psycopg2
 from passlib.hash import pbkdf2_sha256 as sha256
 from datetime import datetime
 import uuid
+import os
 
 class DbSetup():
 
     def __init__(self):
         try:
             self.connection = psycopg2.connect(
-                "dbname='ireporter' user='postgres' host='localhost' password='F31+35e9' port='5432'")
+                "dbname='{}' user='postgres' host='localhost' password='F31+35e9' port='5432'".format(os.environ['DB']))
             self.connection.autocommit = True
             self.cursor = self.connection.cursor()
 
@@ -16,6 +17,7 @@ class DbSetup():
             print("Cannot connect to database")
 
     def create_users_table(self):
+        print("DATABASE : {}" .format(os.environ['DB']))
         create_table_command = """CREATE TABLE IF NOT EXISTS users(
             id VARCHAR(50) PRIMARY KEY,
             first_name VARCHAR(25) NOT NULL,
@@ -59,9 +61,6 @@ class DbSetup():
             'isaacwangethi30', hashed_password, 'admin', datetime.now()))
 
     def drop_tables(self):
-        drop_pets_command = "DROP TABLE IF EXISTS pet CASCADE;"
-        self.cursor.execute(drop_pets_command)
-
         drop_users_command = "DROP TABLE IF EXISTS users CASCADE;"
         self.cursor.execute(drop_users_command)
 

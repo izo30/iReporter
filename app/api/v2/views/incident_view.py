@@ -31,6 +31,14 @@ incident_fields = api.model('Incident', {
     'comments': fields.String
 })
 
+edit_incident_fields = api.model('Incident', {
+    'latitude': fields.Float,
+    'longitude': fields.Float,
+    'images': fields.List(fields.String),
+    'videos': fields.List(fields.String),
+    'comments': fields.String
+})
+
 status_field = api.model('Status', {
     'status': fields.String
 })
@@ -107,3 +115,36 @@ class SingleIncident(Resource):
             'status': 'Success',
             'data': single_incident
         }), 200)
+
+    @api.expect(edit_incident_fields)
+    @api.doc(security='apikey')
+    @token_required
+    def put(self, incident_id):
+        """Edit incident"""
+        parser = required_incident_fields()
+        args = parser.parse_args()
+        latitude = args['latitude']
+        longitude = args['longitude']
+        images = args['images']
+        videos = args['videos']
+        comments = args['comments']
+
+        incident = Incident()
+        updated_incident = incident.edit_incident(incident_id, latitude, longitude, images, videos, comments)
+
+        if updated_incident == "Field should not be empty":
+            return make_response(jsonify({
+                'status': 'Fail',
+                'data': updated_incident
+            }), 400)
+
+        if updated_incident == "Incident not found":
+            return make_response(jsonify({
+                'status': 'Fail',
+                'data': updated_incident
+            }), 404)
+
+        return make_response(jsonify({
+            'status': 'Success',
+            'data': updated_incident
+        }), 201)

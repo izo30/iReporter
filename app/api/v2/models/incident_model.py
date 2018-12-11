@@ -103,6 +103,39 @@ class Incident():
             )
         return "Incident not found"
 
+    def edit_incident(self, incident_id, latitude, longitude, images, videos, comments):
+        """Method to edit an existing incident"""
+        edited_incident_item = dict(
+            latitude = latitude,
+            longitude = longitude,
+            images = images,
+            videos = videos,
+            comments = comments
+        ) 
+
+        is_empty = Incident.check_if_empty(edited_incident_item)  
+        if is_empty:
+            return is_empty
+
+        is_valid = Incident.validate_data(edited_incident_item)
+        if is_valid:
+            return is_valid
+
+        _id = Incident.get_user_id()
+        check_if_exists_query = "SELECT * FROM incidents WHERE created_by='{}' AND id='{}'".format(_id, incident_id)
+        self.cursor.execute(check_if_exists_query)
+        row = self.cursor.fetchone()
+        if row:
+            edit_incident_query = "UPDATE incidents SET latitude='{}', longitude='{}', images='{}', \
+            videos='{}', comment='{}' WHERE created_by='{}' AND id='{}'".format(latitude, longitude, images, videos, comments, _id, incident_id)
+            self.cursor.execute(edit_incident_query)
+            response = dict(
+                id = _id,
+                message = "Incident updated successfully"
+            )
+            return response
+        return 'Incident not found'
+
     @staticmethod
     def check_if_empty(incident):
         for key, value in incident.items():
@@ -150,7 +183,7 @@ class Incident():
             if key == 'videos'and not re.match(r"([a-zA-Z0-9\s_\\.\-\(\):])+(.mp4|.mov|.mkv)$", value):
                 error = True
                 error_response[key] = "Invalid video format"
-            if key == 'comments' and not re.match(r"^[a-z\d\-_\s,.;:\"']+$", value):
+            if key == 'comments' and not re.match(r"^[a-zA-Z\d\-_\s,.;:\"']+$", value):
                 error = True
                 error_response[key] = "Comments should be alphanumeric"
 

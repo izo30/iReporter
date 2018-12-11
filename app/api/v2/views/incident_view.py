@@ -9,7 +9,6 @@ api = Namespace('Incident Endpoints', description='A collection of endpoints for
 
 def required_incident_fields():
     parser = reqparse.RequestParser()
-    parser.add_argument('created_by', help = 'This field cannot be blank', required = True)
     parser.add_argument('type', help = 'This field cannot be blank', required = True)
     parser.add_argument('latitude', help = 'This field cannot be blank', required = True)
     parser.add_argument('longitude', help = 'This field cannot be blank', required = True)
@@ -75,3 +74,36 @@ class IncidentEndpoint(Resource):
             'data': created_incident
         }), 201)
 
+    @api.doc(security='apikey')
+    @token_required
+    def get(self):
+        """Get all incidents"""
+        incident = Incident()
+        incidents = incident.get_all_incidents()
+        if len(incidents) == 0:
+            return make_response(jsonify({
+                'status': 'Fail',
+                'data': incidents
+            }), 404)
+        return make_response(jsonify({
+            'status': 'Success',
+            'data': incidents
+        }), 200)
+
+@api.route('/<string:incident_id>')
+class SingleIncident(Resource):
+    @api.doc(security='apikey')
+    @token_required
+    def get(self, incident_id):
+        """Get a specific incident when provided with an id"""
+        incident = Incident()
+        single_incident = incident.get_single_incident(incident_id) 
+        if single_incident == "Incident not found":
+            return make_response(jsonify({
+                'status': 'Fail',
+                'data': single_incident
+            }), 404)
+        return make_response(jsonify({
+            'status': 'Success',
+            'data': single_incident
+        }), 200)

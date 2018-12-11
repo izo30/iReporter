@@ -136,6 +136,34 @@ class Incident():
             return response
         return 'Incident not found'
 
+    def delete_incident(self, incident_id):
+        """delete the incident"""
+        _id = Incident.get_user_id()
+        check_incident_exists_query = "SELECT * FROM incidents WHERE id='{}' AND created_by='{}'".format(incident_id, _id)
+        self.cursor.execute(check_incident_exists_query)
+        row = self.cursor.fetchone()
+        if row:
+            delete_incident_query = "DELETE FROM incidents WHERE id='{}'".format(incident_id)
+            self.cursor.execute(delete_incident_query)
+            return "Deleted"
+        return 'Incident not found'
+
+    def admin_edit_incident_status(self, incident_id, status):
+        """delete the incident"""
+        if status == None or status == "":
+            return "Status should not be empty"
+        if not Incident.check_if_status(status):
+            return "Invalid status"
+            
+        check_incident_exists_query = "SELECT * FROM incidents WHERE id='{}'".format(incident_id)
+        self.cursor.execute(check_incident_exists_query)
+        row = self.cursor.fetchone()
+        if row:
+            edit_incident_status_query = "UPDATE incidents SET status='{}' WHERE id='{}'".format(status, incident_id)
+            self.cursor.execute(edit_incident_status_query)
+            return "Status edited successfully"
+        return 'Incident not found'
+
     @staticmethod
     def check_if_empty(incident):
         for key, value in incident.items():

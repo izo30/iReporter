@@ -24,8 +24,8 @@ class DbSetup():
             last_name VARCHAR(25) NOT NULL,
             email VARCHAR(100) UNIQUE NOT NULL,
             phone INTEGER,
-            username VARCHAR(25) UNIQUE NOT NULL,
-            password VARCHAR(256) UNIQUE NOT NULL,
+            username VARCHAR(25) NOT NULL,
+            password VARCHAR(256) NOT NULL,
             role VARCHAR(5) NOT NULL,
             registered_on VARCHAR(50));"""
         self.cursor.execute(create_table_command)
@@ -47,8 +47,8 @@ class DbSetup():
     def create_default_admin(self):
         hashed_password = DbSetup.generate_hash('F31+25e9')
 
-        query = "SELECT * FROM users WHERE username=%s"
-        self.cursor.execute(query, ('isaacwangethi30',))
+        query = "SELECT * FROM users WHERE email=%s"
+        self.cursor.execute(query, ('isaacwangethi30@gmail.com',))
         admin = self.cursor.fetchone()
 
         if not admin:

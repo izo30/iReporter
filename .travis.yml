@@ -10,8 +10,6 @@ addons:
 
 postgres:
   adapter: postgresql
-  database: myapp_test
-  username: postgres
 
 script:    
   - pytest --cov=app/api

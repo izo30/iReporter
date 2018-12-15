@@ -5,7 +5,7 @@ This will contain the configuration to be reused in all tests.
 from unittest import TestCase
 from app import create_app
 import os
-from app.instance.db_config import DbSetup
+from instance.db_config import DbSetup
 
 class BaseTest(TestCase):
     """

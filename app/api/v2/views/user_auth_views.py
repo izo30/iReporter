@@ -1,32 +1,18 @@
 from flask import Flask, request, jsonify, Blueprint, json, make_response
 from flask_restplus import Resource, reqparse, Api, Namespace, fields
-from ..models.user_auth_models import User
-from ..utils.validations import Validations
-from ..utils.auth import AuthToken
-from ..utils.encryption import Encryption
-
-api = Namespace('User Endpoints', description='A collection of user endpoints')
-
-signup_fields = api.model('Signup', {
-    'first_name' : fields.String,
-    'last_name' : fields.String,
-    'email': fields.String,
-    'phone' : fields.String,
-    'username' : fields.String,
-    'password': fields.String,
-    'role': fields.String
-})
+from app.api.v2.models.user_auth_models import User
+from app.api.v2.utils.validations import Validations
+from app.api.v2.utils.auth import AuthToken
+from app.api.v2.utils.encryption import Encryption
+from app.api.v2.utils.views_fields import user_api as api, UserFields
 
 """user regitration"""
 @api.route('/signup')
 class Signup(Resource):
-
-    parser = reqparse.RequestParser()
-    Validations().add_arguments(parser, ['first_name','last_name','email','phone','username','password','role'])
-
-    @api.expect(signup_fields)
+    @api.expect(UserFields.signup_fields)
     def post(self):
-        args = Signup.parser.parse_args()
+        parser = UserFields.required_signup_fields()
+        args = parser.parse_args()
         first_name = args['first_name']
         last_name = args['last_name']
         email = args['email']
@@ -56,42 +42,43 @@ class Signup(Resource):
                 'error' : 'User already exists, signup with another email'
             }, 400
 
-login_fields = api.model('Login', {
-    'email': fields.String,
-    'password': fields.String
-})
 """user login"""
 @api.route('/login')
 class Login(Resource):
-
-    parser = reqparse.RequestParser()
-    Validations().add_arguments(parser, ['email','password'])
-
-    @api.expect(login_fields)
+    @api.expect(UserFields.login_fields)
     def post(self):
-        args = Login.parser.parse_args()
+        parser = UserFields.required_login_fields()
+        args = parser.parse_args()
         email = args['email']
         password = args['password']
 
-        if Validations().check_if_empty([email, password]):
+        is_empty = Validations().check_if_empty(dict(email = email, password = password))
+        if is_empty:
             return {
                 'status': 'Fail',
-                'message': 'All fields should be filled'
+                'error': is_empty
             }, 400
 
         if not Validations().validate_email(email):
             return {
                 'status': 'Fail',
-                'message': 'Invalid email'
+                'error': 'Invalid email'
             }, 400
 
-        user_result = User().get_single_user(email, password)
-        if user_result:
-            return {
-                'status' : 'Success',
-                'message' : 'Logged in successfully',
-                'auth_token': user_result.decode('UTF-8')
-            }, 200
+        user = User().get_single_user(email, password)
+        if user:
+            if Encryption().verify_hash(password, user['hash']):
+                token = AuthToken().encode_auth_token(user['id'], user['email'], user['role'])
+                return {
+                    'status' : 'Success',
+                    'message' : 'Logged in successfully',
+                    'auth_token': token.decode('UTF-8')
+                }, 200
+            else:
+                return {
+                    'status' : 'Fail',
+                    'error': "Wrong password"
+                }, 400
         else:
             return {
                 'status': 'Fail',

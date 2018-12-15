@@ -1,8 +1,13 @@
 import jwt
-from app.instance.config import secret_key
+from instance.config import secret_key
 from functools import wraps
 from flask import request, jsonify, make_response
 from datetime import datetime, timedelta
+
+EXPIRED_SIGNATURE = "Signature expired. Please log in again."
+INVALID_TOKEN = "Invalid token. Please log in again."
+ADMIN = "admin"
+USER = "user"
 
 def admin_required(f):
     @wraps(f)
@@ -17,24 +22,21 @@ def admin_required(f):
         if not token:
             return {'message' : 'Token is missing.'}, 401
 
-        if message == 'Invalid token. Please log in again.':
+        if message == INVALID_TOKEN:
             return {'message' : message}, 401
 
-        if message == 'Signature expired. Please log in again.':
+        if message == EXPIRED_SIGNATURE:
             return {'message' : message}, 401
 
-        print('IDENTITY: {}'.format(message))
-
-        if message['role'] == 'user':
+        if message['role'] == USER:
             return {'message' : "You are not an admin"}, 401
 
         return f(*args, **kwargs)
     return decorated
 
-def token_required(f):
+def user_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-
         token = None
         message = None
 
@@ -45,13 +47,14 @@ def token_required(f):
         if not token:
             return {'message' : 'Token is missing.'}, 401
 
-        if message == 'Invalid token. Please log in again.':
+        if message == INVALID_TOKEN:
             return {'message' : message}, 401
 
-        if message == 'Signature expired. Please log in again.':
+        if message == EXPIRED_SIGNATURE:
             return {'message' : message}, 401
 
-        # print('IDENTITY: {}'.format(token))
+        if message['role'] == ADMIN:
+            return {'message' : "You are not a normal user"}, 401
 
         return f(*args, **kwargs)
     return decorated  

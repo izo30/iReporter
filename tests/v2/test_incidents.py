@@ -1,6 +1,8 @@
 import json
-from app.tests.v2.base_test import BaseTest
-from .test_data import signup_url, login_url, incident_url, admin_incident_url, user5, user5_login, admin_login, incident1, incident2, incident4, admin_incident_url, admin_edited_status
+from tests.v2.base_test import BaseTest
+from tests.v2.test_data import signup_url, login_url, incident_url, user5,\
+ user5_login, admin_login, incident1, incident2,incident4, admin_edited_status,\
+ edited_comment, edited_location
 
 class TestIncidents(BaseTest):
 
@@ -78,34 +80,64 @@ class TestIncidents(BaseTest):
         self.assertEqual(single_incident.status_code, 404)
         self.assertEqual('Fail', result['status'])
 
-    def test_edit_incident(self):
+    # def test_edit_incident(self):
+    #     """Asserts test return true status_code and message"""
+    #     auth_token = self.generate_auth_token()
+    #     result = self.create_incident()
+    #     new_incident = self.client().put('{}/{}'.format(incident_url,result['data']['id']), headers=dict(Authorization="{}".format(auth_token)), data = incident4)
+    #     edited_result = json.loads(new_incident.data)
+    #     self.assertEqual(new_incident.status_code, 201)
+    #     self.assertEqual("Success", edited_result['status'])
+    def test_edit_comment(self):
         """Asserts test return true status_code and message"""
         auth_token = self.generate_auth_token()
         result = self.create_incident()
-        new_incident = self.client().put('{}/{}'.format(incident_url,result['data']['id']), headers=dict(Authorization="{}".format(auth_token)), data = incident4)
+        new_incident = self.client().patch('{}/{}/comment'.format(incident_url,result['data']['id']), headers=dict(Authorization="{}".format(auth_token)), data = edited_comment)
         edited_result = json.loads(new_incident.data)
         self.assertEqual(new_incident.status_code, 201)
         self.assertEqual("Success", edited_result['status'])
 
-    def test_admin_edit_incident(self):
+    def test_edit_comment_not_exists(self):
         """Asserts test return true status_code and message"""
-        auth_token = self.generate_admin_auth_token()
-        result = self.create_incident()
-        new_incident = self.client().put('{}/{}'.format(admin_incident_url,result['data']['id']), headers=dict(Authorization="{}".format(auth_token)), data = admin_edited_status)
-        edited_result = json.loads(new_incident.data)
-        self.assertEqual(new_incident.status_code, 201)
-        self.assertEqual("Success", edited_result['status'])
-
-    def test_admin_edit_incident_not_exist(self):
-        auth_token = self.generate_admin_auth_token()
-        new_incident = self.client().put('{}/123'.format(admin_incident_url), headers=dict(Authorization="{}".format(auth_token)), data = admin_edited_status)
+        auth_token = self.generate_auth_token()
+        self.create_incident()
+        new_incident = self.client().patch('{}/{}/comment'.format(incident_url,"51d5d8ae-cf62-4f24-a2d6-3c61e21b0e2"), headers=dict(Authorization="{}".format(auth_token)), data = edited_comment)
         edited_result = json.loads(new_incident.data)
         self.assertEqual(new_incident.status_code, 404)
         self.assertEqual("Fail", edited_result['status'])
 
-    def test_edit_incident_not_exist(self):
+    def test_edit_location(self):
+        """Asserts test return true status_code and message"""
         auth_token = self.generate_auth_token()
-        new_incident = self.client().put('{}/123'.format(incident_url), headers=dict(Authorization="{}".format(auth_token)), data = incident4)
+        result = self.create_incident()
+        new_incident = self.client().patch('{}/{}/location'.format(incident_url,result['data']['id']), headers=dict(Authorization="{}".format(auth_token)), data = edited_location)
+        edited_result = json.loads(new_incident.data)
+        self.assertEqual(new_incident.status_code, 201)
+        self.assertEqual("Success", edited_result['status'])
+
+    def test_edit_location_not_exists(self):
+        """Asserts test return true status_code and message"""
+        auth_token = self.generate_auth_token()
+        self.create_incident()
+        new_incident = self.client().patch('{}/{}/location'.format(incident_url,"51d5d8ae-cf62-4f24-a2d6-3c61e21b0e2"), headers=dict(Authorization="{}".format(auth_token)), data = edited_location)
+        edited_result = json.loads(new_incident.data)
+        self.assertEqual(new_incident.status_code, 404)
+        self.assertEqual("Fail", edited_result['status'])
+
+    def test_admin_edit_status(self):
+        """Asserts test return true status_code and message"""
+        auth_token = self.generate_admin_auth_token()
+        result = self.create_incident()
+        new_incident = self.client().patch('{}/{}/status'.format(incident_url,result['data']['id']), headers=dict(Authorization="{}".format(auth_token)), data = admin_edited_status)
+        edited_result = json.loads(new_incident.data)
+        self.assertEqual(new_incident.status_code, 201)
+        self.assertEqual("Success", edited_result['status'])
+
+    def test_admin_edit_status_not_exists(self):
+        """Asserts test return true status_code and message"""
+        auth_token = self.generate_admin_auth_token()
+        self.create_incident()
+        new_incident = self.client().patch('{}/{}/status'.format(incident_url,"51d5d8ae-cf62-4f24-a2d6-3c61e21b0e2"), headers=dict(Authorization="{}".format(auth_token)), data = admin_edited_status)
         edited_result = json.loads(new_incident.data)
         self.assertEqual(new_incident.status_code, 404)
         self.assertEqual("Fail", edited_result['status'])

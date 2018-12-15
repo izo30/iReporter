@@ -2,13 +2,14 @@ import psycopg2
 from passlib.hash import pbkdf2_sha256 as sha256
 from datetime import datetime
 import uuid
+import os
 
 class DbSetup():
 
     def __init__(self):
         try:
             self.connection = psycopg2.connect(
-                "dbname='ireporter' user='postgres' host='localhost' password='F31+35e9' port='5432'")
+                "dbname='{}' user='postgres' host='localhost' password='F31+35e9' port='5432'".format(os.environ['DB']))
             self.connection.autocommit = True
             self.cursor = self.connection.cursor()
 
@@ -16,14 +17,15 @@ class DbSetup():
             print("Cannot connect to database")
 
     def create_users_table(self):
+        print("DATABASE : {}" .format(os.environ['DB']))
         create_table_command = """CREATE TABLE IF NOT EXISTS users(
             id VARCHAR(50) PRIMARY KEY,
             first_name VARCHAR(25) NOT NULL,
             last_name VARCHAR(25) NOT NULL,
             email VARCHAR(100) UNIQUE NOT NULL,
             phone INTEGER,
-            username VARCHAR(25) UNIQUE NOT NULL,
-            password VARCHAR(256) UNIQUE NOT NULL,
+            username VARCHAR(25) NOT NULL,
+            password VARCHAR(256) NOT NULL,
             role VARCHAR(5) NOT NULL,
             registered_on VARCHAR(50));"""
         self.cursor.execute(create_table_command)
@@ -45,8 +47,8 @@ class DbSetup():
     def create_default_admin(self):
         hashed_password = DbSetup.generate_hash('F31+25e9')
 
-        query = "SELECT * FROM users WHERE username=%s"
-        self.cursor.execute(query, ('isaacwangethi30',))
+        query = "SELECT * FROM users WHERE email=%s"
+        self.cursor.execute(query, ('isaacwangethi30@gmail.com',))
         admin = self.cursor.fetchone()
 
         if not admin:
@@ -59,9 +61,6 @@ class DbSetup():
             'isaacwangethi30', hashed_password, 'admin', datetime.now()))
 
     def drop_tables(self):
-        drop_pets_command = "DROP TABLE IF EXISTS pet CASCADE;"
-        self.cursor.execute(drop_pets_command)
-
         drop_users_command = "DROP TABLE IF EXISTS users CASCADE;"
         self.cursor.execute(drop_users_command)
 

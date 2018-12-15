@@ -4,6 +4,8 @@ This will contain the configuration to be reused in all tests.
 # Library imports 
 from unittest import TestCase
 from app import create_app
+import os
+from app.instance.db_config import DbSetup
 
 class BaseTest(TestCase):
     """
@@ -17,3 +19,4 @@ class BaseTest(TestCase):
 
     def tearDown(self):
         self.app_context.pop()
+        DbSetup().drop_tables()

@@ -8,9 +8,6 @@ services:
 addons:
   postgresql: "10.6"
 
-postgres:
-  adapter: postgresql
-
 script:    
   - pytest --cov=app/api
   - coveralls

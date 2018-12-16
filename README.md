@@ -1,5 +1,7 @@
 # iReporter
 
+[![Build Status](https://travis-ci.org/izo30/iReporter.svg?branch=develop)](https://travis-ci.org/izo30/iReporter) [![Coverage Status](https://coveralls.io/repos/github/izo30/iReporter/badge.svg?branch=develop)](https://coveralls.io/github/izo30/iReporter?branch=develop) [![Maintainability](https://api.codeclimate.com/v1/badges/ef698b481f64d9160d87/maintainability)](https://codeclimate.com/github/izo30/iReporter/maintainability)
+
 A system for reporting any form of corruption to the appropriate authorities and seeking for government intervention on important issues.
 
 ## Available Endpoints:

@@ -1,7 +1,6 @@
 signup_url = 'api/v2/auth/signup'
 login_url = 'api/v2/auth/login'
 incident_url = "/api/v2/incidents"
-admin_incident_url = "/api/v2/incidents/admin"
 
 user1 = dict(
     first_name = 'triza',
@@ -107,4 +106,13 @@ incident4 = dict(
 
 admin_edited_status = {
     "status": "under investigation"
+}
+
+edited_comment = {
+    "comments": "government offices around kahawa area need renovation"
+}
+
+edited_location = {
+    "latitude": "0.475",
+    "longitude": "5.348"
 }

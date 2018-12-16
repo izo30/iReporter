@@ -1,7 +1,7 @@
 from flask import jsonify
-from ..utils.encryption import Encryption
-from ..utils.auth import AuthToken
-from app.instance.config import secret_key
+from app.api.v2.utils.encryption import Encryption
+from app.api.v2.utils.auth import AuthToken
+from instance.config import secret_key
 from datetime import datetime, timedelta
 import jwt
 import re
@@ -58,12 +58,13 @@ class User():
         query = "SELECT * FROM users WHERE email='{}'" .format(email)
         self.cursor.execute(query)
         user = self.cursor.fetchone()
-
         if user:
-            if Encryption().verify_hash(password, user[6]):
-                return AuthToken().encode_auth_token(user[0], user[3], user[7])
-            else:
-                return False
+            return dict(
+                hash = user[6],
+                id = user[0],
+                email = user[3],
+                role = user[7]
+            )
         else:
             return False
 

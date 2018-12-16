@@ -1,6 +1,6 @@
 from flask import Flask
-from .instance.config import app_config
-from .instance.db_config import DbSetup
+from instance.config import app_config
+from instance.db_config import DbSetup
 import os
 
 def create_app(config):

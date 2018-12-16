@@ -27,9 +27,13 @@ class Validations():
 
     def check_if_empty(self, fields):
         is_empty = False
-        for field in fields:
-            if not field.strip():
+        is_empty_message = {}
+        for key, value in fields.items():
+            if not value:
                 is_empty = True
+                is_empty_message[key] = "{} should not be empty".format(key)
+        if is_empty:
+            return is_empty_message
         return is_empty
 
     def check_if_role(self, role):
@@ -45,11 +49,19 @@ class Validations():
         error_response = {}
         error = False
 
-        if self.check_if_empty([first_name, last_name, email, phone, username, password, role]):
-            error = True
-            error_response['empty_field'] = "All fields should be filled"
-            error_message = dict( error = error_response )
-            return error_message
+        user = dict(
+            first_name = first_name,
+            last_name = last_name,
+            email = email,
+            phone = phone,
+            username = username,
+            password = password,
+            role = role
+        )
+
+        is_empty = self.check_if_empty(user)
+        if is_empty:
+            return dict(error = is_empty)
         if not self.validate_name(first_name):
             error = True
             error_response['first_name'] = "First name should contain letters only"
@@ -95,31 +107,43 @@ class Validations():
             if re.match(r"^\d+?\.\d+?$", value): return True
             else: return False
 
+    def validate_comments(self, comment):
+        if re.match(r"^[a-zA-Z\d\-_\s,.;:\"']+$", comment):
+            return True
+        return False
+
     def validate_incident_data(self, latitude, longitude, images, videos, comments, type="edit"):
 
         error_response = {}
         error = False
 
-        if self.check_if_empty([type, latitude, longitude, images, videos, comments]):
-            error = True
-            error_response['empty_field'] = "All fields should be filled"
-            error_message = dict( error = error_response )
-            return error_message
+        incident = dict(
+            latitude = latitude,
+            longitude = longitude,
+            images = images,
+            videos = videos,
+            comments = comments,
+            type = type
+        )
+
+        is_empty = self.check_if_empty(incident)
+        if is_empty:
+            return dict(error = is_empty)
         if not Validations().check_if_type(type):
             error = True
             error_response['type'] = "Type should be intervention or red flag"
         if not Validations().validate_location([latitude, longitude]):
             error = True
-            error_response['location'] = "Latitude and longitude should be a float number"
+            error_response['location'] = "Latitude and longitude should be a float"
         if not re.match(r"([a-zA-Z0-9\s_\\.\-\(\):])+(.jpg|.png|.jpeg|.gif)$", images):
             error = True
             error_response['image'] = "Invalid image format"
         if not re.match(r"([a-zA-Z0-9\s_\\.\-\(\):])+(.mp4|.mov|.mkv)$", videos):
             error = True
             error_response['videos'] = "Invalid video format"
-        if not re.match(r"^[a-zA-Z\d\-_\s,.;:\"']+$", comments):
+        if not self.validate_comments(comments):
             error = True
-            error_response['comments'] = "Comments should be alphanumeric"
+            error_response['comments'] = "Comments should contain alphanumeric plus ,.;:\"' only"
 
         if error:
             error_message = dict( error = error_response )

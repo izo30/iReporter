@@ -1,10 +1,11 @@
 # Library imports
 import json
 # Local application imports
-from app.tests.v2.base_test import BaseTest
+from tests.v2.base_test import BaseTest
 from app.api.v2.models.user_auth_models import User
 from app.api.v2.utils.auth import AuthToken
-from .test_data import signup_url, login_url, user1, admin_login, encode_token_data, user2, user3, user4
+from tests.v2.test_data import signup_url, login_url, user1, admin_login,\
+ encode_token_data, user2, user3, user4
 
 class TestUser(BaseTest):
 

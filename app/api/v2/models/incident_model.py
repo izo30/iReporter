@@ -1,7 +1,7 @@
 import datetime 
 from flask import request
-from ..models.user_auth_models import User
-from ..utils.auth import AuthToken
+from app.api.v2.models.user_auth_models import User
+from app.api.v2.utils.auth import AuthToken
 import re
 import psycopg2
 import uuid
@@ -80,16 +80,27 @@ class Incident():
                 comment = row[9]
             )
 
-    def edit_incident(self, incident_id, latitude, longitude, images, videos, comments):
+    def edit_incident_location(self, incident_id, latitude, longitude):
         """Method to edit an existing incident"""
         created_by = AuthToken().get_user_id()
         if self.check_user_incident_exists(incident_id, created_by):
-            edit_incident_query = "UPDATE incidents SET latitude='{}', longitude='{}', images='{}', \
-            videos='{}', comment='{}' WHERE created_by='{}' AND id='{}'".format(latitude, longitude, images, videos, comments, created_by, incident_id)
+            edit_incident_query = "UPDATE incidents SET latitude='{}', longitude='{}' WHERE created_by='{}' AND id='{}'".format(latitude, longitude, created_by, incident_id)
             self.cursor.execute(edit_incident_query)
             response = dict(
-                id = incident_id,
-                message = "Incident updated successfully"
+                edited_incident = self.get_single_incident(incident_id),
+                message = "Incident location updated successfully"
+            )
+            return response
+
+    def edit_incident_comment(self, incident_id, comment):
+        """Method to edit an existing incident"""
+        created_by = AuthToken().get_user_id()
+        if self.check_user_incident_exists(incident_id, created_by):
+            edit_incident_query = "UPDATE incidents SET comment='{}' WHERE created_by='{}' AND id='{}'".format(comment, created_by, incident_id)
+            self.cursor.execute(edit_incident_query)
+            response = dict(
+                edited_incident = self.get_single_incident(incident_id),
+                message = "Incident comment updated successfully"
             )
             return response
 

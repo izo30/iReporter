@@ -1,4 +1,3 @@
-
 from flask import Flask, request, jsonify, Blueprint, json, make_response
 from flask_restplus import Resource, reqparse, Api, Namespace, fields
 from app.api.v2.utils.views_fields import incidents_api as api, IncidentFields

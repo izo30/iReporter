@@ -52,6 +52,26 @@ user5 = dict(
     role = 'user'
 )
 
+invalid_user = dict(
+    first_name = '99345',
+    last_name = '98354',
+    email = 'clarkgmail.com',
+    phone = '0737hj465746', 
+    username = 'clark!',
+    password = '123456',
+    role = 'unknown'
+)
+
+empty_values_user = dict(
+    first_name = '',
+    last_name = '',
+    email = '',
+    phone = '', 
+    username = '',
+    password = '',
+    role = ''
+)
+
 user5_login = dict(
     email = 'hamani@gmail.com',
     password = 'F31+25e9',
@@ -60,6 +80,26 @@ user5_login = dict(
 admin_login = dict(
     email = 'isaacwangethi30@gmail.com',
     password = 'F31+25e9',
+)
+
+not_exist_login = dict(
+    email = 'fn84tn8n@gmail.com',
+    password = 'F31+25e9',
+)
+
+invalid_email_login = dict(
+    email = 'clarkgmail.com',
+    password = 'F31+25e9',
+)
+
+wrong_password_login = dict(
+    email = 'isaacwangethi30@gmail.com',
+    password = 'F1+25e9',
+)
+
+empty_values_login = dict(
+    email = '',
+    password = '',
 )
 
 encode_token_data = dict(
@@ -102,6 +142,15 @@ incident4 = dict(
     images = 'image.jpg',
     videos = 'video.mp4',
     comments = 'kahawa west road needs maintenance'
+)
+
+incident5 = dict(
+    type = 'intervention',
+    latitude = '8.39',
+    longitude = '1.74',
+    images = 'image.jpg',
+    videos = 'video.mp4',
+    comments = 'road trenches around kahawa area need renovation'
 ) 
 
 admin_edited_status = {

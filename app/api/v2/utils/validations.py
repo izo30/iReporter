@@ -44,6 +44,24 @@ class Validations():
         else:
             return False
 
+    def token_present(self, token):
+        if token:
+            return True
+
+    def check_if_admin(self, role):
+        if role == "admin":
+            return True
+
+    def check_if_user(self, role):
+        if role == "user":
+            return True
+
+    def check_token_error(self, message):
+        if message == "Signature expired. Please log in again.":
+            return message
+        if message == "Invalid token. Please log in again.":
+            return message
+
     def validate_user_data(self, first_name, last_name, email, phone, username, password, role):
 
         error_response = {}

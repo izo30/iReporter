@@ -1,5 +1,6 @@
 import jwt
 from instance.config import secret_key
+from app.api.v2.utils.validations import Validations
 from functools import wraps
 from flask import request, jsonify, make_response
 from datetime import datetime, timedelta
@@ -19,16 +20,13 @@ def admin_required(f):
             token = request.headers['Authorization']
             message = AuthToken().decode_auth_token(token)
 
-        if not token:
+        if not Validations().token_present(token):
             return {'message' : 'Token is missing.'}, 401
 
-        if message == INVALID_TOKEN:
+        if Validations().check_token_error(message):
             return {'message' : message}, 401
 
-        if message == EXPIRED_SIGNATURE:
-            return {'message' : message}, 401
-
-        if message['role'] == USER:
+        if not Validations().check_if_admin(message['role']):
             return {'message' : "You are not an admin"}, 401
 
         return f(*args, **kwargs)
@@ -44,16 +42,13 @@ def user_required(f):
             token = request.headers['Authorization']
             message = AuthToken().decode_auth_token(token)
 
-        if not token:
+        if not Validations().token_present(token):
             return {'message' : 'Token is missing.'}, 401
 
-        if message == INVALID_TOKEN:
+        if Validations().check_token_error(message):
             return {'message' : message}, 401
 
-        if message == EXPIRED_SIGNATURE:
-            return {'message' : message}, 401
-
-        if message['role'] == ADMIN:
+        if not Validations().check_if_user(message['role']):
             return {'message' : "You are not a normal user"}, 401
 
         return f(*args, **kwargs)
@@ -64,10 +59,10 @@ class AuthToken():
     def __init__(self):
         pass
 
-    def encode_auth_token(self, id, email, role):
+    def encode_auth_token(self, _id, email, role):
         """ Generates an Auth token"""
         try:
-            token = jwt.encode({'id' : id, 'user' : email, 'role' : role, 'exp' : datetime.utcnow() + timedelta(minutes=1440)}, secret_key)
+            token = jwt.encode({'id' : _id, 'user' : email, 'role' : role, 'exp' : datetime.utcnow() + timedelta(minutes=1440)}, secret_key)
             return token
         except Exception as e:
             return e 

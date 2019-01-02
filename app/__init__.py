@@ -11,12 +11,5 @@ def create_app(config):
     app.register_blueprint(v2)
     app.config.from_object(app_config[config])
     app.url_map.strict_slashes = False
-    # app.config['testing'] = True
-
-    DbSetup().create_users_table()
-    DbSetup().create_incidents_table()
-    DbSetup().create_default_admin()
-
-    # DbSetup().drop_tables()
 
     return app

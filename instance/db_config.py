@@ -3,21 +3,39 @@ from passlib.hash import pbkdf2_sha256 as sha256
 from datetime import datetime
 import uuid
 import os
+from flask import current_app
 
 class DbSetup():
 
-    def __init__(self):
+    def __init__(self, app=None):
+        self.app = app
+        current_context = self.context_switcher()
+        self.db_name = current_context.config['DB_NAME']
+        self.db_user = current_context.config['DB_USERNAME']
+        self.db_password = current_context.config['DB_PASSWORD']
+        self.db_host = current_context.config['DB_HOST']
+        self.connection = psycopg2.connect(
+            database=self.db_name, 
+            user=self.db_user,
+            password=self.db_password,
+            host=self.db_host
+        )
+        self.connection.autocommit = True
+        print("DB URL : {}{}{}{}" .format(self.db_name, self.db_user, self.db_password, self.db_host))
         try:
-            self.connection = psycopg2.connect(
-                "dbname='{}' user='postgres' host='localhost' password='F31+35e9' port='5432'".format(os.environ['DB']))
-            self.connection.autocommit = True
             self.cursor = self.connection.cursor()
-
+            print("CONNECTION_SUCCESS!!")
         except:
-            print("Cannot connect to database")
+            print("CONNECTION_ERROR!!")
+
+    def context_switcher(self):
+        """get current passed context to the dbModel"""
+        if current_app:
+            return current_app
+        else:
+            return self.app
 
     def create_users_table(self):
-        print("DATABASE : {}" .format(os.environ['DB']))
         create_table_command = """CREATE TABLE IF NOT EXISTS users(
             id VARCHAR(50) PRIMARY KEY,
             first_name VARCHAR(25) NOT NULL,
@@ -60,13 +78,28 @@ class DbSetup():
             self.cursor.execute(create_admin_query, (_id, 'Isaac', 'Wangethi', 'isaacwangethi30@gmail.com', '0785768576',\
             'isaacwangethi30', hashed_password, 'admin', datetime.now()))
 
+    def create_default_test_user(self):
+        hashed_password = DbSetup.generate_hash('F31+25e9')
+
+        query = "SELECT * FROM users WHERE email=%s"
+        self.cursor.execute(query, ('hamani@gmail.com',))
+        user = self.cursor.fetchone()
+
+        if not user:
+            _id = uuid.uuid4()
+            _id = str(_id)
+            create_user_query = "INSERT INTO users(id, first_name, last_name, email, phone, username, password, role,\
+             registered_on)\
+                    VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+            self.cursor.execute(create_user_query, (_id, 'hamani', 'grain', 'hamani@gmail.com', '0736547657',\
+            'hamani', hashed_password, 'user', datetime.now()))
+
     def drop_tables(self):
         drop_users_command = "DROP TABLE IF EXISTS users CASCADE;"
         self.cursor.execute(drop_users_command)
 
         drop_incidents_command = "DROP TABLE IF EXISTS incidents CASCADE;"
         self.cursor.execute(drop_incidents_command)
-        
 
     @staticmethod
     def generate_hash(password):

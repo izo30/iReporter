@@ -6,19 +6,13 @@ import re
 import psycopg2
 import uuid
 import os
+from instance.db_config import DbSetup
 
 """Incident model class"""
-class Incident():
+class Incident(DbSetup):
     """ Initializing the constructor"""
     def __init__(self):
-        try:
-            self.connection = psycopg2.connect(
-                "dbname='{}' user='postgres' host='localhost' password='F31+35e9' port='5432'".format(os.environ['DB']))
-            self.connection.autocommit = True
-            self.cursor = self.connection.cursor()
-
-        except:
-            print("Cannot connect to database")
+        super().__init__()
 
     """Method to create a new incident into list"""
     def create_incident(self, type, latitude, longitude, images, videos, comments):

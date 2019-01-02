@@ -31,6 +31,8 @@ PyJWT==1.6.4
 pylint==2.2.2
 pytest==4.0.1
 pytest-cov==2.6.0
+pytest-env==0.6.2
+python-dotenv==0.10.1
 pytz==2018.7
 requests==2.20.1
 six==1.11.0

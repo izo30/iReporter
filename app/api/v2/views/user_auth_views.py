@@ -40,7 +40,7 @@ class Signup(Resource):
             return {
                 'status' : 'Fail',
                 'error' : 'User already exists, signup with another email'
-            }, 400
+            }, 403
 
 """user login"""
 @api.route('/login')
@@ -83,5 +83,5 @@ class Login(Resource):
             return {
                 'status': 'Fail',
                 'message': 'User does not exist, sign up!'
-            }, 400
+            }, 403
                 
